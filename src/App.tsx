@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Component } from "react";
+import { AppState } from "./interfaces";
+import SearchBar from "./SearchBar";
+import CardList from "./CardList";
+import ErrorBoundary from "./ErrorBoundary";
+import "./styles.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+class App extends Component<{}, AppState> {
+  state: AppState = {
+    searchTerm: localStorage.getItem("searchTerm") || "",
+    results: [],
+    loading: false,
+    error: null,
+  };
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  fetchResults = (query: string) => {
+    this.setState({ loading: true, error: null });
+    fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=0`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({ results: data.results, loading: false });
+      })
+      .catch((error) => {
+        this.setState({ error: error.message, loading: false });
+      });
+  };
+
+  handleSearch = (query: string) => {
+    const trimmedQuery = query.trim();
+    this.setState({ searchTerm: trimmedQuery });
+    localStorage.setItem("searchTerm", trimmedQuery);
+    this.fetchResults(trimmedQuery);
+  };
+
+  componentDidMount() {
+    if (this.state.searchTerm) {
+      this.fetchResults(this.state.searchTerm);
+    }
+  }
+
+  render() {
+    return (
+      <ErrorBoundary>
+        <div className="app">
+          <SearchBar onSearch={this.handleSearch} initialValue={this.state.searchTerm} />
+          {this.state.loading && <p>Loading...</p>}
+          {this.state.error && <p className="error">{this.state.error}</p>}
+          <CardList results={this.state.results} />
+        </div>
+      </ErrorBoundary>
+    );
+  }
 }
 
-export default App
+export default App;
