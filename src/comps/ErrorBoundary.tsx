@@ -22,6 +22,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.error) {
       return (
         <div className="error">
+          <div className="header">Star★Error</div>
           <h2>Something went wrong. Please try again.</h2>
           <button onClick={() => this.setState(initState)}>
             {'Reset Error'}

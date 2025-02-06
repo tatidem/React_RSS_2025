@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { AppState } from './interfaces';
 import SearchBar from './comps/SearchBar';
 import CardList from './comps/CardList';
-import ErrorBoundary from './comps/ErrorBoundary';
 import { getComics } from './utils/api';
 import { callWithDelay } from './utils/delay';
 import LoadingSpinner from './comps/LoadingSpinner';
@@ -38,32 +37,28 @@ class App extends Component<unknown, AppState> {
   };
 
   componentDidMount() {
-    if (this.state.searchTerm) {
-      this.fetchResults(this.state.searchTerm);
-    }
+    this.fetchResults(this.state.searchTerm);
   }
 
   render() {
     return (
       <div>
         <div className="header">Star★Comics</div>
-        <ErrorBoundary>
-          <div className="app">
-            <SearchBar
-              onSearch={this.handleSearch}
-              initialValue={this.state.searchTerm}
+        <div className="app">
+          <SearchBar
+            onSearch={this.handleSearch}
+            initialValue={this.state.searchTerm}
+          />
+          {this.state.loading ? (
+            <LoadingSpinner />
+          ) : (
+            <CardList
+              results={this.state.results}
+              empty={this.state.searchTerm.length === 0}
             />
-            {this.state.loading ? (
-              <LoadingSpinner />
-            ) : (
-              <CardList
-                results={this.state.results}
-                empty={this.state.searchTerm.length === 0}
-              />
-            )}
-            <ErrorButton />
-          </div>
-        </ErrorBoundary>
+          )}
+          <ErrorButton />
+        </div>
         <div className="footer"></div>
       </div>
     );
