@@ -1,0 +1,44 @@
+.card {
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 10px;
+  width: 280px;
+  text-align: center;
+  transition: transform 0.3s;
+  background-color: rgb(47, 28, 53);
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.wrap {
+  display: flex;
+  text-align: center;
+  justify-content: right;
+}
+
+.index {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  min-width: 2rem;
+  height: 2rem;
+  margin: 0;
+  color: white;
+  font-weight: normal;
+  background-color: rgba(108, 85, 116, 0.75);
+}
+
+.title {
+  color: white;
+}
+
+.description {
+  font-size: 0.85rem;
+  font-style: italic;
+}
