@@ -105,7 +105,7 @@ button:hover {
 }
 
 button:focus {
-  border-color: #66afe9;
+  border-color: #4e5962;
   box-shadow: 0 2px 8px rgba(102, 175, 233, 0.6);
   outline: none;
 }
