@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import NotFound from './comps/Notfound.tsx';
+import NotFound from './comps/NotFound.tsx';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import ErrorBoundary from './comps/ErrorBoundary.tsx';

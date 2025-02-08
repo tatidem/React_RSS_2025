@@ -1,5 +1,7 @@
-import { Component } from 'react';
-import { AppState } from './interfaces';
+import React, { useEffect, useState } from 'react';
+import { useLocalStorage } from './hooks/useLocalStorage';
+import { Comic } from './interfaces';
+// import { AppState } from './interfaces';
 import SearchBar from './comps/SearchBar';
 import CardList from './comps/CardList';
 import { getComics } from './utils/api';
@@ -8,61 +10,57 @@ import LoadingSpinner from './comps/LoadingSpinner';
 import { ErrorButton } from './comps/ErrorButton';
 import './styles.css';
 
-class App extends Component<unknown, AppState> {
-  state: AppState = {
-    searchTerm: localStorage.getItem('searchTerm') || '',
-    results: [],
-    loading: false,
-    error: null,
-  };
+const App: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
+  const [results, setResults] = useState<Comic[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  fetchResults = (query: string) => {
-    this.setState({ loading: true, error: null });
-    getComics(query)
-      .then((data) => {
-        callWithDelay(() => {
-          this.setState({ results: data.comics, loading: false });
-        });
-      })
-      .catch((error) => {
-        this.setState({ error: error.message, loading: false });
+  const fetchResults = async (query: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getComics(query);
+      callWithDelay(() => {
+        setResults(data.comics);
+        setLoading(false);
       });
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+      setLoading(false);
+    }
   };
 
-  handleSearch = (query: string) => {
+  const handleSearch = (query: string) => {
     const trimmedQuery = query.trim();
-    this.setState({ searchTerm: trimmedQuery });
-    localStorage.setItem('searchTerm', trimmedQuery);
-    this.fetchResults(trimmedQuery);
+    setSearchTerm(trimmedQuery);
+    fetchResults(trimmedQuery);
   };
 
-  componentDidMount() {
-    this.fetchResults(this.state.searchTerm);
-  }
+  useEffect(() => {
+    fetchResults(searchTerm);
+  }, [searchTerm]);
 
-  render() {
-    return (
-      <div>
-        <div className="header">Star★Comics</div>
-        <div className="app">
-          <SearchBar
-            onSearch={this.handleSearch}
-            initialValue={this.state.searchTerm}
-          />
-          {this.state.loading ? (
-            <LoadingSpinner />
-          ) : (
-            <CardList
-              results={this.state.results}
-              empty={this.state.searchTerm.length === 0}
-            />
-          )}
-          <ErrorButton />
-        </div>
-        <div className="footer"></div>
+  return (
+    <div>
+      <div className="header">Star★Comics</div>
+      <div className="app">
+        <SearchBar onSearch={handleSearch} initialValue={searchTerm} />
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <CardList results={results} empty={searchTerm.length === 0} />
+        )}
+        {error && <div className="error-message">{error}</div>}
+        <ErrorButton />
       </div>
-    );
-  }
-}
+      <div className="footer"></div>
+    </div>
+  );
+};
 
 export default App;

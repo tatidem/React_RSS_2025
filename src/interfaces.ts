@@ -36,12 +36,12 @@ export interface SearchResult {
   comics: Comic[];
 }
 
-export interface AppState {
-  searchTerm: string;
-  results: Comic[];
-  loading: boolean;
-  error: string | null;
-}
+// export interface AppState {
+//   searchTerm: string;
+//   results: Comic[];
+//   loading: boolean;
+//   error: string | null;
+// }
 
 export interface SearchBarProps {
   onSearch: (query: string) => void;
