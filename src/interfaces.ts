@@ -48,9 +48,9 @@ export interface SearchBarProps {
   initialValue: string;
 }
 
-export interface SearchBarState {
-  query: string;
-}
+// export interface SearchBarState {
+//   query: string;
+// }
 
 export interface CardProps {
   index: number;

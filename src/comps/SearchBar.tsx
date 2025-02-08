@@ -1,29 +1,23 @@
-import React, { Component } from 'react';
-import { SearchBarProps, SearchBarState } from '../interfaces';
+import { useState } from 'react';
+import { SearchBarProps } from '../interfaces';
 
-class SearchBar extends Component<SearchBarProps, SearchBarState> {
-  state: SearchBarState = { query: this.props.initialValue || '' };
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialValue }) => {
+  const [query, setQuery] = useState(initialValue || '');
 
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ query: event.target.value });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
   };
 
-  handleSubmit = () => {
-    this.props.onSearch(this.state.query);
+  const handleSubmit = () => {
+    onSearch(query);
   };
 
-  render() {
-    return (
-      <div className="search-bar">
-        <input
-          type="text"
-          value={this.state.query}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleSubmit}>Search</button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="search-bar">
+      <input type="text" value={query} onChange={handleChange} />
+      <button onClick={handleSubmit}>Search</button>
+    </div>
+  );
+};
 
 export default SearchBar;
