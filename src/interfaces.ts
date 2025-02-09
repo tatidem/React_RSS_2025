@@ -16,6 +16,7 @@ export interface Comic {
   yearTo: number | null;
   photonovel: boolean;
   adaptation: boolean;
+  description?: string; 
 }
 
 export interface Page {
@@ -36,25 +37,15 @@ export interface SearchResult {
   comics: Comic[];
 }
 
-// export interface AppState {
-//   searchTerm: string;
-//   results: Comic[];
-//   loading: boolean;
-//   error: string | null;
-// }
-
 export interface SearchBarProps {
   onSearch: (query: string) => void;
   initialValue: string;
 }
 
-// export interface SearchBarState {
-//   query: string;
-// }
-
 export interface CardProps {
   index: number;
   comic: Comic;
+  onClick: () => void;
 }
 
 export interface NothingProps {
@@ -64,6 +55,8 @@ export interface NothingProps {
 export interface CardListProps {
   results: Comic[];
   empty: boolean;
+  offset: number;
+  onCardClick: (id: string) => void; 
 }
 
 export interface ErrorBoundaryState {
@@ -80,4 +73,9 @@ export interface PaginationProps {
   totalItems: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
+}
+
+export interface DetailedProps {
+  uid: string;
+  onClose: () => void;
 }

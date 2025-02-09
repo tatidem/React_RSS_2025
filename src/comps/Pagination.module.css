@@ -13,8 +13,8 @@
   background-color: #d843bbc7;
 }
 
-.button:disabled {
-  /* background-color: #cccccc; */
+.button:disabled:hover {
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 

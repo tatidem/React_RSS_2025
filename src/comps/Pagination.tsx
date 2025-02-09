@@ -1,6 +1,7 @@
 import React from 'react';
 import style from './Pagination.module.css';
 import { PaginationProps } from '../interfaces';
+
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalItems,
