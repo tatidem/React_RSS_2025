@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Comic } from '../interfaces';
 import { getComicDetails } from '../utils/api';
@@ -12,6 +12,7 @@ const Detailed: React.FC = () => {
   const [comic, setComic] = useState<Comic | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const detailedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -29,12 +30,26 @@ const Detailed: React.FC = () => {
     fetchDetails();
   }, [uid]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     navigate(`/${location.search}`, { replace: true });
-  };
+  }, [navigate, location.search]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (detailedRef.current && !detailedRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClose]);
 
   return (
-    <div className="detailed">
+    <div className="detailed" ref={detailedRef}>
       {loading ? (
         <LoadingSpinner />
       ) : (
