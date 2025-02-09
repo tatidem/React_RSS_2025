@@ -5,7 +5,7 @@ export const ErrorButton = () => {
 
   useEffect(() => {
     if (error) {
-      console.log('Error state changed to true');
+      console.error('Error state changed to true');
     }
   }, [error]);
 
