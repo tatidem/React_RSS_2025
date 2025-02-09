@@ -1,68 +1,20 @@
-import { Component } from 'react';
-import { AppState } from './interfaces';
-import SearchBar from './comps/SearchBar';
-import CardList from './comps/CardList';
-import { getComics } from './utils/api';
-import { callWithDelay } from './utils/delay';
-import LoadingSpinner from './comps/LoadingSpinner';
-import { ErrorButton } from './comps/ErrorButton';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/home';
+import Detailed from './pages/detailed';
+import NotFound from './pages/NotFound';
 import './styles.css';
 
-class App extends Component<unknown, AppState> {
-  state: AppState = {
-    searchTerm: localStorage.getItem('searchTerm') || '',
-    results: [],
-    loading: false,
-    error: null,
-  };
-
-  fetchResults = (query: string) => {
-    this.setState({ loading: true, error: null });
-    getComics(query)
-      .then((data) => {
-        callWithDelay(() => {
-          this.setState({ results: data.comics, loading: false });
-        });
-      })
-      .catch((error) => {
-        this.setState({ error: error.message, loading: false });
-      });
-  };
-
-  handleSearch = (query: string) => {
-    const trimmedQuery = query.trim();
-    this.setState({ searchTerm: trimmedQuery });
-    localStorage.setItem('searchTerm', trimmedQuery);
-    this.fetchResults(trimmedQuery);
-  };
-
-  componentDidMount() {
-    this.fetchResults(this.state.searchTerm);
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="header">Star★Comics</div>
-        <div className="app">
-          <SearchBar
-            onSearch={this.handleSearch}
-            initialValue={this.state.searchTerm}
-          />
-          {this.state.loading ? (
-            <LoadingSpinner />
-          ) : (
-            <CardList
-              results={this.state.results}
-              empty={this.state.searchTerm.length === 0}
-            />
-          )}
-          <ErrorButton />
-        </div>
-        <div className="footer"></div>
-      </div>
-    );
-  }
-}
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />}>
+          <Route path="detailed/:uid" element={<Detailed />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;

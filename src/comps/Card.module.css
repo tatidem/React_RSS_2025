@@ -7,6 +7,7 @@
   transition: transform 0.3s;
   background-color: rgb(47, 28, 53);
   cursor: pointer;
+  user-select: none;
 }
 
 .card:hover {
