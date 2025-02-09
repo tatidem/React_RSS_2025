@@ -1,89 +1,136 @@
-// import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-// import { MemoryRouter, Routes, Route } from 'react-router-dom';
-// import Home from '../pages/home';
-// import { getComics } from '../utils/api';
-// import { Comic } from '../interfaces';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, useSearchParams, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import Home from '../pages/home';
+import { getComics } from '../utils/api';
+import { Mock } from 'vitest';
 
-// vi.mock('../utils/api', () => ({
-//   getComics: vi.fn(),
-// }));
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useSearchParams: vi.fn(),
+    useNavigate: vi.fn(),
+    useParams: vi.fn(),
+    useLocation: vi.fn(),
+  };
+});
 
-// const mockComics: Comic[] = [
-//   { uid: '1', title: 'Comic 1', thumbnail: 'url1' },
-//   { uid: '2', title: 'Comic 2', thumbnail: 'url2' },
-// ];
+vi.mock('../hooks/useLocalStorage', () => ({
+  useLocalStorage: vi.fn(() => ['mockSearchTerm', vi.fn()]),
+}));
 
-// describe('Home Component', () => {
-//   beforeEach(() => {
-//     (getComics as vi.Mock).mockResolvedValue({ comics: mockComics });
-//   });
+vi.mock('../comps/SearchBar', () => {
+  return {
+    __esModule: true,
+    default: vi.fn(() => <div data-testid="mock-search-bar">Mock Search Bar</div>),
+  };
+});
 
-//   test('renders without crashing', () => {
-//     render(
-//       <MemoryRouter>
-//         <Home />
-//       </MemoryRouter>
-//     );
-//     expect(screen.getByText('Star★Comics')).toBeInTheDocument();
-//   });
+vi.mock('../comps/CardList', () => {
+  return {
+    __esModule: true,
+    default: vi.fn(({ results }) => <div data-testid="mock-card-list">Mock Card List - {results.length} items</div>),
+  };
+});
 
-//   test('displays loading spinner when fetching data', async () => {
-//     render(
-//       <MemoryRouter>
-//         <Home />
-//       </MemoryRouter>
-//     );
-//     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-//     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-//     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
-//   });
 
-//   test('fetches and displays comics on search', async () => {
-//     render(
-//       <MemoryRouter>
-//         <Home />
-//       </MemoryRouter>
-//     );
-//     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-//     await waitFor(() => expect(getComics).toHaveBeenCalledWith('test'));
-//     expect(screen.getByText('Comic 1')).toBeInTheDocument();
-//     expect(screen.getByText('Comic 2')).toBeInTheDocument();
-//   });
+vi.mock('../comps/Pagination', () => {
+  return {
+    __esModule: true,
+    default: vi.fn(() => <div data-testid="mock-pagination">Mock Pagination</div>),
+  };
+});
 
-//   test('handles pagination correctly', async () => {
-//     const longMockComics = Array.from({ length: 15 }, (_, i) => ({
-//       uid: `${i + 1}`,
-//       title: `Comic ${i + 1}`,
-//       thumbnail: `url${i + 1}`,
-//     }));
+vi.mock('../comps/LoadingSpinner', () => {
+  return {
+    __esModule: true,
+    default: () => <div data-testid="loading-spinner">Loading...</div>,
+  };
+});
 
-//     (getComics as vi.Mock).mockResolvedValueOnce({ comics: longMockComics });
+vi.mock('../utils/api', () => ({
+  getComics: vi.fn(),
+}));
 
-//     render(
-//       <MemoryRouter initialEntries={['/?page=1']}>
-//         <Home />
-//       </MemoryRouter>
-//     );
+describe('Home Component', () => {
+  const mockNavigate = vi.fn();
+  const mockSearchParams = new URLSearchParams();
+  const mockSetSearchParams = vi.fn();
+  const mockComicsData = { comics: [{ uid: '1', title: 'Comic 1' }, { uid: '2', title: 'Comic 2' }] };
+  const mockLocation = {
+      pathname: '/',
+      search: '?query=test',
+      hash: '',
+      state: null,
+      key: 'r4nd0m'
+  };
+  const memRender = (
+    <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+  );
 
-//     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-//     await waitFor(() => expect(screen.getByText('Comic 1')).toBeInTheDocument());
-//     fireEvent.click(screen.getByText('2'));
-//     expect(screen.getByText('Comic 11')).toBeInTheDocument();
-//   });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
+    (useSearchParams as Mock).mockReturnValue([mockSearchParams, mockSetSearchParams]);
+    (useParams as Mock).mockReturnValue({});  // Mock useParams
+    (useLocation as Mock).mockReturnValue(mockLocation);
+    (getComics as Mock).mockResolvedValue(mockComicsData);
+  });
 
-//   test('navigates to detailed view on card click', async () => {
-//     render(
-//       <MemoryRouter>
-//         <Routes>
-//           <Route path="/" element={<Home />} />
-//           <Route path="/detailed/:uid" element={<div>Detailed View</div>} />
-//         </Routes>
-//       </MemoryRouter>
-//     );
+  it('renders header and mock SearchBar', () => {
+    render(memRender);
+    expect(screen.getByText('Star★Comics')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-search-bar')).toBeInTheDocument();
+  });
 
-//     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
-//     await waitFor(() => expect(screen.getByText('Comic 1')).toBeInTheDocument());
-//     fireEvent.click(screen.getByText('Comic 1'));
-//     expect(screen.getByText('Detailed View')).toBeInTheDocument();
-//   });
-// });
+  it('shows loading spinner while loading', () => {
+    (getComics as Mock).mockImplementation(() => new Promise(() => {})); // Block promise
+    render(memRender);
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+  });
+
+  it('fetches comics and renders CardList after loading', async () => {
+    render(memRender);
+    await waitFor(() => {
+      expect(getComics).toHaveBeenCalledWith('mockSearchTerm');  // Initial search term
+      expect(screen.getByTestId('mock-card-list')).toBeInTheDocument();
+      expect(screen.getByText('Mock Card List - 2 items')).toBeInTheDocument();
+    });
+  });
+
+  it('fetches comics and renders CardList after loading if result is empty', async () => {
+    (getComics as Mock).mockReturnValue({ comics: [] });
+    render(memRender);
+    await waitFor(() => {
+      expect(getComics).toHaveBeenCalledWith('mockSearchTerm');  // Initial search term
+      expect(screen.getByTestId('mock-card-list')).toBeInTheDocument();
+      expect(screen.getByText('Mock Card List - 0 items')).toBeInTheDocument();
+    });
+  });
+
+  it('renders Pagination when there are more comics than ITEMS_PER_PAGE', async () => {
+    const moreMockComicsData = {
+      comics: Array(15).fill({ uid: '1', title: 'Comic 1' }),
+    };
+    (getComics as Mock).mockResolvedValue(moreMockComicsData);
+    render(memRender);
+    await waitFor(() => {
+      expect(getComics).toHaveBeenCalledWith('mockSearchTerm');
+    });
+    await waitFor(() => {
+        expect(screen.getByTestId('mock-pagination')).toBeInTheDocument();
+    });
+  });
+
+  it('displays an error message when fetching comics fails', async () => {
+    (getComics as Mock).mockRejectedValue(new Error('Failed to fetch comics'));
+    render(memRender);
+    await waitFor(() => {
+      expect(getComics).toHaveBeenCalledWith('mockSearchTerm');
+      expect(screen.getByText('Failed to fetch comics')).toBeInTheDocument();
+    });
+  });
+});

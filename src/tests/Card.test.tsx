@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Card from '../comps/Card';
 import { Comic } from '../interfaces';
 
-// Моковые данные для тестов
 const mockComic: Comic = {
   uid: '1',
   title: 'Test Comic',
@@ -35,7 +34,6 @@ describe('Card Component', () => {
 
     expect(screen.getByText('Test Comic')).toBeInTheDocument();
 
-    // expect(screen.getByText('This is a test comic description.')).toBeInTheDocument();
   });
 
   it('calls onClick when the card is clicked', () => {
