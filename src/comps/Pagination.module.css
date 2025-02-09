@@ -21,4 +21,5 @@
 .pageInfo {
   font-size: 16px;
   margin: 0 10px;
+  user-select: none;
 }

@@ -11,8 +11,8 @@ const Nothing: React.FC<NothingProps> = ({ empty }) => {
       </div>
       {!empty && (
         <>
-          Sorry, nothing found. Try another query like "star", "war" or something
-          else...
+          Sorry, nothing found. Try another query like "star", "war" or
+          something else...
           <div className={style.stars}>
             <span className={style.star}>★</span>
             <span className={style.star}>★</span>

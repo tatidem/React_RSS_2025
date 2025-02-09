@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate, Outlet, useParams, useLocation } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  useSearchParams,
+  useNavigate,
+  Outlet,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import SearchBar from '../comps/SearchBar';
 import { Comic } from '../interfaces';
@@ -23,9 +29,7 @@ const Home: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { uid } = useParams<{ uid?: string }>();
   const location = useLocation();
-
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  //const detailedId = searchParams.get('detailed');
 
   const fetchResults = async (query: string) => {
     setLoading(true);
@@ -57,13 +61,14 @@ const Home: React.FC = () => {
     setSearchParams({ page: page.toString() });
   };
 
-  const handleCardClick = (uid: string) => {
-    navigate(`/detailed/${uid}${location.search}`);
-  };
-
-  // const handleCloseDetailed = () => {
-  //   setSearchParams({ page: currentPage.toString() });
-  // };
+  const handleCardClick = useCallback(
+    (cardUid: string) => {
+      if (location.pathname === '/') {
+        navigate(`/detailed/${cardUid}${location.search}`);
+      }
+    },
+    [location.pathname, location.search, navigate]
+  );
 
   useEffect(() => {
     fetchResults(searchTerm);
@@ -104,7 +109,6 @@ const Home: React.FC = () => {
                 <Outlet />
               </div>
             )}
-            
           </div>
         )}
         {error && <div className="error-message">{error}</div>}

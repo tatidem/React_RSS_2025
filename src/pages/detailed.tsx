@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Comic } from '../interfaces';
+import { ComicDetail } from '../interfaces';
 import { getComicDetails } from '../utils/api';
 import LoadingSpinner from '../comps/LoadingSpinner';
 import './detailed.css';
 
-
 const Detailed: React.FC = () => {
-  const { uid } = useParams<{ uid: string }>(); 
+  const { uid } = useParams<{ uid: string }>();
   const navigate = useNavigate();
-  const [comic, setComic] = useState<Comic | null>(null);
+  const [comic, setComic] = useState<ComicDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const detailedRef = useRef<HTMLDivElement>(null);
@@ -36,15 +35,19 @@ const Detailed: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (detailedRef.current && !detailedRef.current.contains(event.target as Node)) {
+      if (
+        detailedRef.current &&
+        !detailedRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('button')
+      ) {
         handleClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mouseup', handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseup', handleClickOutside);
     };
   }, [handleClose]);
 
@@ -54,10 +57,78 @@ const Detailed: React.FC = () => {
         <LoadingSpinner />
       ) : (
         comic && (
-          <div>
-            <h2>{comic.title}</h2>
-            <p>Published: {comic.publishedYear}</p>
-            <p>Pages: {comic.numberOfPages}</p>
+          <div className="dt-wrapper">
+            <h2 className="title">{comic.title}</h2>
+            <p className="text-gray">Publication Date: {comic.publishedYear}</p>
+            <p className="text-gray">Number of Pages: {comic.numberOfPages}</p>
+            {comic.comicSeries.length > 0 && (
+              <>
+                <h3 className="sub-header">Series</h3>
+                <div className="section">
+                  <div className="sub-card">
+                    <ul className="list">
+                      {comic.comicSeries.map((series) => (
+                        <li key={series.uid} className="sub-list">
+                          {series.title}
+                          <p className="text-gray">
+                            Published: {series.publishedYearFrom} -{' '}
+                            {series.publishedYearTo}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
+            {comic.writers.length > 0 && (
+              <>
+                <h3 className="sub-header">Writers</h3>
+                <div className="section">
+                  <div className="sub-card">
+                    <ul className="list">
+                      {comic.writers.map((writer) => (
+                        <li key={writer.uid} className="sub-list">
+                          {writer.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
+            {comic.artists.length > 0 && (
+              <>
+                <h3 className="sub-header">Artists</h3>
+                <div className="section">
+                  <div className="sub-card">
+                    <ul className="list">
+                      {comic.artists.map((artist) => (
+                        <li key={artist.uid} className="sub-list">
+                          {artist.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
+            {comic.publishers.length > 0 && (
+              <>
+                <h3 className="sub-header">Publishers</h3>
+                <div className="section">
+                  <div className="sub-card">
+                    <ul className="list">
+                      {comic.publishers.map((publisher) => (
+                        <li key={publisher.uid} className="sub-list">
+                          {publisher.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )
       )}
@@ -69,4 +140,3 @@ const Detailed: React.FC = () => {
 };
 
 export default Detailed;
-

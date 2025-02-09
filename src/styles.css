@@ -61,6 +61,7 @@ button {
   background-color: #f7f7f7;
   color: #26172c;
   cursor: pointer;
+  user-select: none;
   transition:
     border-color 0.5s,
     box-shadow 0.5s,
