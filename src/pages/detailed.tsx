@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Comic } from '../interfaces';
 import { getComicDetails } from '../utils/api';
 import LoadingSpinner from '../comps/LoadingSpinner';
+import './detailed.css';
 
 
 const Detailed: React.FC = () => {
@@ -34,9 +35,6 @@ const Detailed: React.FC = () => {
 
   return (
     <div className="detailed">
-      <button onClick={handleClose} className="close-button">
-        Close
-      </button>
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -48,6 +46,9 @@ const Detailed: React.FC = () => {
           </div>
         )
       )}
+      <button onClick={handleClose} className="close-button">
+        Close
+      </button>
     </div>
   );
 };
