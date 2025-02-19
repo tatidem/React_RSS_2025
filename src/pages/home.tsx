@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   useSearchParams,
   useNavigate,
@@ -6,59 +6,49 @@ import {
   useParams,
   useLocation,
 } from 'react-router-dom';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../app/store';
+import { setSearchTerm } from '../app/searchSlice';
 import SearchBar from '../comps/SearchBar';
-import { Comic } from '../interfaces';
 import CardList from '../comps/CardList';
 import { ErrorButton } from '../comps/ErrorButton';
-import { getComics } from '../utils/api';
-import { callWithDelay } from '../utils/delay';
 import LoadingSpinner from '../comps/LoadingSpinner';
 import Pagination from '../comps/Pagination';
-
+import { useSearchComicsQuery } from '../app/apiSlice';
 import './home.css';
 
 const ITEMS_PER_PAGE = 10;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
-  const [results, setResults] = useState<Comic[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { uid } = useParams<{ uid?: string }>();
   const location = useLocation();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
-  const fetchResults = async (query: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getComics(query);
-      callWithDelay(() => {
-        setResults(data.comics);
-        setLoading(false);
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError('An unknown error occurred');
-      }
-      setLoading(false);
+
+  const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
+
+  useEffect(() => {
+    const initialQuery = searchParams.get('query') || '';
+    if (initialQuery !== searchTerm) {
+      dispatch(setSearchTerm(initialQuery));
     }
-  };
+  }, [dispatch, searchParams, searchTerm]);
+
+  const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm, {
+    skip: !searchTerm.trim(),
+  });
 
   const handleSearch = (query: string) => {
     const trimmedQuery = query.trim();
-    setSearchTerm(trimmedQuery);
-    setSearchParams({ page: '1' });
-    fetchResults(trimmedQuery);
+    dispatch(setSearchTerm(trimmedQuery));
+    setSearchParams({ query: trimmedQuery, page: '1' });
   };
 
   const handlePageChange = (page: number) => {
-    setSearchParams({ page: page.toString() });
+    setSearchParams({ query: searchTerm, page: page.toString() });
   };
 
   const handleCardClick = useCallback(
@@ -70,21 +60,19 @@ const Home: React.FC = () => {
     [location.pathname, location.search, navigate]
   );
 
-  useEffect(() => {
-    fetchResults(searchTerm);
-  }, [searchTerm]);
-
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentResults = results.slice(startIndex, endIndex);
+  const currentResults = data?.comics?.slice(startIndex, endIndex) || [];
 
   return (
     <div>
       <div className="header">Star★Comics</div>
       <div className="app">
         <SearchBar onSearch={handleSearch} initialValue={searchTerm} />
-        {loading ? (
+        {isLoading ? (
           <LoadingSpinner />
+        ) : isError ? (
+          <div className="error-message">{error?.toString()}</div>
         ) : (
           <div className="content">
             <div className="left-section">
@@ -94,10 +82,10 @@ const Home: React.FC = () => {
                 empty={searchTerm.length === 0}
                 onCardClick={handleCardClick}
               />
-              {results.length > ITEMS_PER_PAGE && (
+              {data?.comics && data.comics.length > ITEMS_PER_PAGE && (
                 <Pagination
                   currentPage={currentPage}
-                  totalItems={results.length}
+                  totalItems={data.comics.length}
                   itemsPerPage={ITEMS_PER_PAGE}
                   onPageChange={handlePageChange}
                 />
@@ -111,7 +99,6 @@ const Home: React.FC = () => {
             )}
           </div>
         )}
-        {error && <div className="error-message">{error}</div>}
         <div className="error-button-wrapper">
           <ErrorButton />
         </div>
