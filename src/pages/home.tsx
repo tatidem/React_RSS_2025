@@ -38,7 +38,7 @@ const Home: React.FC = () => {
   }, [dispatch, searchParams, searchTerm]);
 
   const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm, {
-    skip: !searchTerm.trim(),
+    // skip: !searchTerm.trim(),
   });
 
   const handleSearch = (query: string) => {

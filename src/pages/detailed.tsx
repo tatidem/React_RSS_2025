@@ -16,7 +16,6 @@ const Detailed: React.FC = () => {
     navigate(`/${location.search}`, { replace: true });
   }, [navigate, location.search]);
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -44,7 +43,7 @@ const Detailed: React.FC = () => {
   }
 
   if (!comic) {
-    return null;
+    return <div>No comic data found.</div>;
   }
 
   return (

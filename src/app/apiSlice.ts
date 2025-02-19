@@ -17,7 +17,9 @@ export const apiSlice = createApi({
     }),
     getComicDetails: builder.query<ComicDetail, string>({
       query: (uid) => `/comics?uid=${uid}`,
-      transformResponse: (response: { comics: ComicDetail[] }) => response.comics[0],
+      transformResponse: (response: { comics: ComicDetail }) => {
+        return response.comics;
+      },
     }),
   }),
 });
