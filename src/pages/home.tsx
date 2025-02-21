@@ -9,12 +9,13 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { setSearchTerm } from '../app/searchSlice';
-import { addItem, removeItem } from '../app/selectedItemsSlice';
+import { addItem, removeItem} from '../app/selectedItemsSlice';
 import SearchBar from '../comps/SearchBar';
 import CardList from '../comps/CardList';
 import { ErrorButton } from '../comps/ErrorButton';
 import LoadingSpinner from '../comps/LoadingSpinner';
 import Pagination from '../comps/Pagination';
+import Flyout from '../comps/Flyout';
 import { useSearchComicsQuery } from '../app/apiSlice';
 import './home.css';
 
@@ -30,6 +31,7 @@ const Home: React.FC = () => {
 
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
   const selectedItems = useSelector((state: RootState) => state.selectedItems.items);
+  const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm);
 
   useEffect(() => {
     const initialQuery = searchParams.get('query') || '';
@@ -37,8 +39,6 @@ const Home: React.FC = () => {
       dispatch(setSearchTerm(initialQuery));
     }
   }, [dispatch, searchParams, searchTerm]);
-
-  const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm);
 
   const handleSearch = (query: string) => {
     const trimmedQuery = query.trim();
@@ -69,6 +69,20 @@ const Home: React.FC = () => {
     },
     [dispatch]
   );
+
+  const handleDownload = () => {
+    const selectedComics = data?.comics?.filter((comic) => selectedItems.includes(comic.uid)) || [];
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + selectedComics.map((comic) => `${comic.title},${comic.description},${comic.detailsUrl}`).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${selectedItems.length}_episodes.csv`);
+    document.body.appendChild(link);
+    link.click();
+  };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -110,6 +124,12 @@ const Home: React.FC = () => {
               </div>
             )}
           </div>
+        )}
+        {selectedItems.length > 0 && (
+          <Flyout
+            selectedCount={selectedItems.length}
+            onDownload={handleDownload}
+          />
         )}
         <div className="error-button-wrapper">
           <ErrorButton />

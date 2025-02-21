@@ -17,6 +17,7 @@ export interface Comic {
   photonovel: boolean;
   adaptation: boolean;
   description?: string;
+  detailsUrl: string;
 }
 
 export interface ComicDetail extends Comic {

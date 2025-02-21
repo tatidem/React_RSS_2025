@@ -1,0 +1,28 @@
+.flyout {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 18px;
+  background-color: #95477a;
+  padding: 10px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.flyout button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+}
+
+.buttons{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+

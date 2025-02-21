@@ -7,33 +7,3 @@
   padding-bottom: 30px;
 }
 
-.checkbox {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%; /* Делаем чекбокс круглым */
-  border: 2px solid #007bff; /* Цвет рамки */
-  background-color: #fff;
-  appearance: none; /* Убираем стандартный стиль чекбокса */
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-
-.checkbox:checked {
-  background-color: #007bff; /* Цвет фона при выборе */
-  border-color: #007bff;
-}
-
-
-.checkbox:checked::after {
-  content: '✔';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 14px;
-  color: #fff;
-}
