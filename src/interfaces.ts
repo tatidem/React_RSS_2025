@@ -264,17 +264,22 @@ export interface CardProps {
   index: number;
   comic: Comic;
   onClick: () => void;
+  isSelected: boolean;
+  onCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface NothingProps {
   empty: boolean;
 }
 
+
 export interface CardListProps {
   results: Comic[];
   empty: boolean;
   offset: number;
   onCardClick: (id: string) => void;
+  selectedItems: string[];
+  onCheckboxChange: (uid: string, isChecked: boolean) => void;
 }
 
 export interface ErrorBoundaryState {

@@ -9,6 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { setSearchTerm } from '../app/searchSlice';
+import { addItem, removeItem } from '../app/selectedItemsSlice';
 import SearchBar from '../comps/SearchBar';
 import CardList from '../comps/CardList';
 import { ErrorButton } from '../comps/ErrorButton';
@@ -27,8 +28,8 @@ const Home: React.FC = () => {
   const location = useLocation();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
-
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
+  const selectedItems = useSelector((state: RootState) => state.selectedItems.items);
 
   useEffect(() => {
     const initialQuery = searchParams.get('query') || '';
@@ -37,9 +38,7 @@ const Home: React.FC = () => {
     }
   }, [dispatch, searchParams, searchTerm]);
 
-  const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm, {
-    // skip: !searchTerm.trim(),
-  });
+  const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm);
 
   const handleSearch = (query: string) => {
     const trimmedQuery = query.trim();
@@ -58,6 +57,17 @@ const Home: React.FC = () => {
       }
     },
     [location.pathname, location.search, navigate]
+  );
+
+  const handleCheckboxChange = useCallback(
+    (uid: string, isChecked: boolean) => {
+      if (isChecked) {
+        dispatch(addItem(uid));
+      } else {
+        dispatch(removeItem(uid));
+      }
+    },
+    [dispatch]
   );
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -81,6 +91,8 @@ const Home: React.FC = () => {
                 offset={startIndex}
                 empty={searchTerm.length === 0}
                 onCardClick={handleCardClick}
+                selectedItems={selectedItems}
+                onCheckboxChange={handleCheckboxChange}
               />
               {data?.comics && data.comics.length > ITEMS_PER_PAGE && (
                 <Pagination
