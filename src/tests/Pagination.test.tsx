@@ -4,7 +4,6 @@ import Pagination from '../comps/Pagination';
 import { PaginationProps } from '../interfaces';
 
 describe('Pagination Component', () => {
-
   const mockOnPageChange = vi.fn();
 
   const defaultProps: PaginationProps = {

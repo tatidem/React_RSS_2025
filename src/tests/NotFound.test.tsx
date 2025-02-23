@@ -13,7 +13,9 @@ describe('NotFound', () => {
   it('renders the not found message', () => {
     render(<NotFound />);
 
-    const message = screen.getByText(/The page you are looking for does not exist./i);
+    const message = screen.getByText(
+      /The page you are looking for does not exist./i
+    );
     expect(message).toBeInTheDocument();
   });
 });

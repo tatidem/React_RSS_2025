@@ -1,9 +1,8 @@
 .cardList {
-  position: relative; 
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
   padding-bottom: 30px;
 }
-

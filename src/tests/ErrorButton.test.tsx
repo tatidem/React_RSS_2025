@@ -10,7 +10,9 @@ describe('ErrorButton', () => {
   });
 
   it('throws an error when the button is clicked', () => {
-    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorMock = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     try {
       render(<ErrorButton />);
       const button = screen.getByText('Error Button');
@@ -23,5 +25,4 @@ describe('ErrorButton', () => {
     expect(consoleErrorMock).toHaveBeenCalled();
     consoleErrorMock.mockRestore();
   });
-
 });

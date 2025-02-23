@@ -18,6 +18,7 @@ import Pagination from '../comps/Pagination';
 import Flyout from '../comps/Flyout';
 import { useSearchComicsQuery } from '../app/apiSlice';
 import './home.css';
+import { downloadCSV } from '../utils/downloadCSV';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -30,7 +31,9 @@ const Home: React.FC = () => {
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
-  const selectedItems = useSelector((state: RootState) => state.selectedItems.items);
+  const selectedItems = useSelector(
+    (state: RootState) => state.selectedItems.items
+  );
   const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm);
 
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -67,27 +70,13 @@ const Home: React.FC = () => {
 
   const handleCheckboxChange = useCallback(
     (uid: string, isChecked: boolean) => {
-      if (isChecked) {
-        dispatch(addItem(uid));
-      } else {
-        dispatch(removeItem(uid));
-      }
+      dispatch(isChecked ? addItem(uid) : removeItem(uid));
     },
     [dispatch]
   );
 
   const handleDownload = () => {
-    const selectedComics = data?.comics?.filter((comic) => selectedItems.includes(comic.uid)) || [];
-
-    const csvContent = selectedComics
-      .map((comic) => `${comic.title},${comic.description},${comic.detailsUrl}`)
-      .join("\n");
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-
-    const url = URL.createObjectURL(blob);
-
-    setDownloadUrl(url);
+    downloadCSV(data, selectedItems, setDownloadUrl);
   };
 
   useEffect(() => {

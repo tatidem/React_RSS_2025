@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { unselectAll } from '../app/selectedItemsSlice';
 import style from './Flyout.module.css';
@@ -9,7 +9,11 @@ interface FlyoutProps {
   reset: boolean;
 }
 
-const Flyout: React.FC<FlyoutProps> = ({ selectedCount, onDownload, reset }) => {
+const Flyout: React.FC<FlyoutProps> = ({
+  selectedCount,
+  onDownload,
+  reset,
+}) => {
   const dispatch = useDispatch();
 
   const handleUnselectAll = useCallback(() => {
@@ -19,7 +23,7 @@ const Flyout: React.FC<FlyoutProps> = ({ selectedCount, onDownload, reset }) => 
   useEffect(() => {
     if (reset) {
       handleUnselectAll();
-    };
+    }
   }, [handleUnselectAll, reset]);
 
   return (

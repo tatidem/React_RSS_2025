@@ -12,7 +12,9 @@ vi.mock('../comps/Card', () => ({
 }));
 
 vi.mock('../comps/Nothing', () => ({
-  default: vi.fn(({ empty }) => <div data-testid="nothing">{empty ? 'No results' : ''}</div>),
+  default: vi.fn(({ empty }) => (
+    <div data-testid="nothing">{empty ? 'No results' : ''}</div>
+  )),
 }));
 
 describe('CardList', () => {
@@ -33,6 +35,7 @@ describe('CardList', () => {
       yearTo: null,
       photonovel: false,
       adaptation: false,
+      detailsUrl: 'https://example.com/comic1',
     },
     {
       uid: '2',
@@ -50,6 +53,7 @@ describe('CardList', () => {
       yearTo: null,
       photonovel: true,
       adaptation: true,
+      detailsUrl: 'https://example.com/comic2',
     },
   ];
 
@@ -60,6 +64,8 @@ describe('CardList', () => {
         empty={true}
         offset={0}
         onCardClick={vi.fn()}
+        selectedItems={[]}
+        onCheckboxChange={() => {}}
       />
     );
 
@@ -78,6 +84,8 @@ describe('CardList', () => {
         empty={false}
         offset={mockOffset}
         onCardClick={mockOnCardClick}
+        selectedItems={[]}
+        onCheckboxChange={() => {}}
       />
     );
 
@@ -101,6 +109,8 @@ describe('CardList', () => {
         empty={false}
         offset={mockOffset}
         onCardClick={mockOnCardClick}
+        selectedItems={[]}
+        onCheckboxChange={() => {}}
       />
     );
 

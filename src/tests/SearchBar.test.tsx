@@ -3,7 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import SearchBar from '../comps/SearchBar';
 
 describe('SearchBar Component', () => {
-
   it('renders without errors', () => {
     const mockOnSearch = vi.fn();
     render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
@@ -38,25 +37,24 @@ describe('SearchBar Component', () => {
   });
 
   it('calls onSearch with the trimmed input value', () => {
-        const mockOnSearch = vi.fn();
-        render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
-        const inputElement = screen.getByRole('textbox');
-        fireEvent.change(inputElement, { target: { value: '  test search  ' } });
+    const mockOnSearch = vi.fn();
+    render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
+    const inputElement = screen.getByRole('textbox');
+    fireEvent.change(inputElement, { target: { value: '  test search  ' } });
 
-        const searchButton = screen.getByRole('button', { name: 'Search' });
-        fireEvent.click(searchButton);
+    const searchButton = screen.getByRole('button', { name: 'Search' });
+    fireEvent.click(searchButton);
 
-        expect(mockOnSearch).toHaveBeenCalledWith('  test search  ');
-    });
+    expect(mockOnSearch).toHaveBeenCalledWith('  test search  ');
+  });
 
-    it('calls onSearch with initialValue if search button is clicked without changing input', () => {
-        const mockOnSearch = vi.fn();
-        render(<SearchBar onSearch={mockOnSearch} initialValue="initial search" />);
+  it('calls onSearch with initialValue if search button is clicked without changing input', () => {
+    const mockOnSearch = vi.fn();
+    render(<SearchBar onSearch={mockOnSearch} initialValue="initial search" />);
 
-        const searchButton = screen.getByRole('button', { name: 'Search' });
-        fireEvent.click(searchButton);
+    const searchButton = screen.getByRole('button', { name: 'Search' });
+    fireEvent.click(searchButton);
 
-        expect(mockOnSearch).toHaveBeenCalledWith('initial search');
-    });
-
+    expect(mockOnSearch).toHaveBeenCalledWith('initial search');
+  });
 });

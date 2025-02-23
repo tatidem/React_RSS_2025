@@ -2,12 +2,13 @@ import { CardProps } from '../interfaces';
 import { getDescription } from '../utils/description';
 import style from './Card.module.css';
 
-const Card: React.FC<CardProps> = ({ 
+const Card: React.FC<CardProps> = ({
   index,
   comic,
   onClick,
   isSelected,
-  onCheckboxChange}) => {
+  onCheckboxChange,
+}) => {
   return (
     <article className={style.card} onClick={onClick}>
       <div className={style.wrap}>

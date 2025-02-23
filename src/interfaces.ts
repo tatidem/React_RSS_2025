@@ -273,7 +273,6 @@ export interface NothingProps {
   empty: boolean;
 }
 
-
 export interface CardListProps {
   results: Comic[];
   empty: boolean;

@@ -8,9 +8,8 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { getComicDetails } from '../utils/api';
-import type { Mock } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach, Mock } from 'vitest';
+import { useGetComicDetailsQuery } from '../app/apiSlice';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -22,8 +21,8 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../utils/api', () => ({
-  getComicDetails: vi.fn(),
+vi.mock('../app/apiSlice', () => ({
+  useGetComicDetailsQuery: vi.fn(),
 }));
 
 const uid = 'UID-MOCK';
@@ -77,7 +76,6 @@ describe('Detailed Component', () => {
     (useParams as Mock).mockReturnValue({ uid });
     (useNavigate as Mock).mockReturnValue(mockNavigate);
     (useLocation as Mock).mockReturnValue(mockLocation);
-    (getComicDetails as Mock).mockResolvedValue(mockComicDetails);
   });
 
   afterEach(() => {
@@ -85,6 +83,11 @@ describe('Detailed Component', () => {
   });
 
   it('loading indicator is displayed while fetching data', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+    });
     render(memRender);
     await waitFor(() => {
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
@@ -92,9 +95,14 @@ describe('Detailed Component', () => {
   });
 
   it('detailed card component correctly displays the detailed card data (after loading)', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: mockComicDetails,
+      isLoading: false,
+      isError: false,
+    });
     render(memRender);
     await waitFor(() => {
-      expect(getComicDetails).toHaveBeenCalledWith(uid);
+      expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
       expect(screen.getByText(mockComicDetails.title)).toBeInTheDocument();
       expect(
         screen.getByText(`Publication Date: ${mockComicDetails.publishedYear}`)
@@ -127,9 +135,14 @@ describe('Detailed Component', () => {
   });
 
   it('calls navigate with correct path on close button click', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: mockComicDetails,
+      isLoading: false,
+      isError: false,
+    });
     render(memRender);
     await waitFor(() => {
-      expect(getComicDetails).toHaveBeenCalledWith(uid);
+      expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
@@ -139,9 +152,14 @@ describe('Detailed Component', () => {
   });
 
   it('calls handleClose when clicking outside the detailed component', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: mockComicDetails,
+      isLoading: false,
+      isError: false,
+    });
     render(memRender);
     await waitFor(() => {
-      expect(getComicDetails).toHaveBeenCalledWith(uid);
+      expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
     fireEvent.mouseDown(document.body);
     fireEvent.mouseUp(document.body);
@@ -152,9 +170,14 @@ describe('Detailed Component', () => {
   });
 
   it('does not call handleClose when clicking inside the detailed component', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: mockComicDetails,
+      isLoading: false,
+      isError: false,
+    });
     render(memRender);
     await waitFor(() => {
-      expect(getComicDetails).toHaveBeenCalledWith(uid);
+      expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
     const titleElement = screen.getByText(mockComicDetails.title);
     fireEvent.mouseDown(titleElement);

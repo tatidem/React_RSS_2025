@@ -1,8 +1,23 @@
+/* :root {
+  --font-family: Arial, sans-serif;
+  --line-height: 1.2;
+  --font-weight: 400;
+  --scrollbar-thumb-hover: #7c507a;
+  --input-focus-border: #66afe9;
+  --input-focus-shadow: rgba(102, 175, 233, 0.6);
+  --button-focus-border: #4e5962;
+  --button-disabled-bg: #cccccc;
+  --neon-glow: #ff4da6;
+  --error-color: rgb(173, 0, 95);
+}
+ */
+
 .dark {
   --text-color: rgba(204, 204, 204, 0.75);
   --bg-color: #270b26;
   --input-border: #444;
   --input-shadow: rgba(0, 0, 0, 0.5);
+  --input-text-color: #0f0e0f;
   --button-bg: #2d2d2d;
   --button-hover-bg: #5e3a5e;
   --button-hover-color: white;
@@ -12,12 +27,12 @@
   --card-color: #ffffff;
   --border-color: #444;
   --neon-glow: #ff4da6;
-  --card-background-color:  rgb(47, 28, 53);
+  --card-background-color: rgb(47, 28, 53);
   --card-border-color: #ddd;
-  --card-text-color:  #747474;
+  --card-text-color: #747474;
   --card-header-text-color: white;
   --index-card-background-color: rgba(108, 85, 116, 0.75);
-  --index-text-color:  var(--text-color);
+  --index-text-color: var(--text-color);
   --index-border-color: transparent;
   --button-border: transparent;
   --pagination-button-background-color: #80266e;
@@ -33,6 +48,7 @@
   --bg-color: #ffffff;
   --input-border: var(--index-border-color);
   --input-shadow: rgba(173, 173, 173, 0.5);
+  --input-text-color: #201420;
   --button-bg: #f7f7f7;
   --button-hover-bg: #5e3a5e;
   --button-hover-color: white;
@@ -47,7 +63,7 @@
   --card-text-color: #26172c;
   --card-header-text-color: rgb(0, 0, 0);
   --index-card-background-color: rgba(255, 255, 255, 0.75);
-  --index-text-color:  #26172c;
+  --index-text-color: #26172c;
   --index-border-color: #26172c;
   --button-border: var(--index-border-color);
   --pagination-button-background-color: #c48cb9;
@@ -98,7 +114,7 @@ body {
 input {
   font-size: 1.2rem;
   border-radius: 12px;
-  color: var(--text-color);
+  color:  var(--input-text-color);
   padding: 5px 10px;
   border: 1px solid var(--input-border);
   box-shadow: 0 2px 12px var(--input-shadow);
