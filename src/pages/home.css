@@ -7,6 +7,8 @@
   font-size: 2em;
   font-weight: 500;
   user-select: none;
+  background-color: transparent;
+  color: var(--header-color);
 }
 
 .footer {
@@ -21,7 +23,7 @@
 }
 
 .error {
-  color: rgb(173, 0, 95);
+  color: var(--error-color);
   display: flex;
   text-align: center;
   justify-content: center;
@@ -37,32 +39,32 @@
   0% {
     text-shadow:
       0 0 5px #fff,
-      0 0 10px #ff4da6,
-      0 0 15px #ff4da6,
-      0 0 20px #ff4da6,
-      0 0 25px #ff4da6,
-      0 0 30px #ff4da6,
-      0 0 35px #ff4da6;
+      0 0 10px var(--neon-glow),
+      0 0 15px var(--neon-glow),
+      0 0 20px var(--neon-glow),
+      0 0 25px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 35px var(--neon-glow);
   }
   50% {
     text-shadow:
       0 0 10px #fff,
-      0 0 20px #ff4da6,
-      0 0 30px #ff4da6,
-      0 0 40px #ff4da6,
-      0 0 50px #ff4da6,
-      0 0 60px #ff4da6,
-      0 0 70px #ff4da6;
+      0 0 20px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 40px var(--neon-glow),
+      0 0 50px var(--neon-glow),
+      0 0 60px var(--neon-glow),
+      0 0 70px var(--neon-glow);
   }
   100% {
     text-shadow:
       0 0 5px #fff,
-      0 0 10px #ff4da6,
-      0 0 15px #ff4da6,
-      0 0 20px #ff4da6,
-      0 0 25px #ff4da6,
-      0 0 30px #ff4da6,
-      0 0 35px #ff4da6;
+      0 0 10px var(--neon-glow),
+      0 0 15px var(--neon-glow),
+      0 0 20px var(--neon-glow),
+      0 0 25px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 35px var(--neon-glow);
   }
 }
 
@@ -70,7 +72,7 @@
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   font-size: 3rem;
-  color: #fff;
+  color: var(--header-color);
   text-align: center;
   animation: neonGlow 1.5s ease-in-out infinite alternate;
 }
@@ -103,7 +105,7 @@
 
 .right-section {
   flex: 1;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--border-color);
   padding-left: 20px;
 }
 
@@ -115,6 +117,7 @@
   height: 54px;
   margin-bottom: 32px;
 }
+
 .error-button-wrapper button {
   height: auto;
   width: auto;

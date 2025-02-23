@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import {
   useSearchParams,
   useNavigate,
@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { setSearchTerm } from '../app/searchSlice';
-import { addItem, removeItem} from '../app/selectedItemsSlice';
+import { addItem, removeItem } from '../app/selectedItemsSlice';
 import SearchBar from '../comps/SearchBar';
 import CardList from '../comps/CardList';
 import { ErrorButton } from '../comps/ErrorButton';
@@ -33,16 +33,22 @@ const Home: React.FC = () => {
   const selectedItems = useSelector((state: RootState) => state.selectedItems.items);
   const { data, isLoading, isError, error } = useSearchComicsQuery(searchTerm);
 
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const linkRef = useRef<HTMLAnchorElement | null>(null);
+  const [selectReset, setSelectReset] = useState<boolean>(false);
+
   useEffect(() => {
     const initialQuery = searchParams.get('query') || '';
     if (initialQuery !== searchTerm) {
       dispatch(setSearchTerm(initialQuery));
+      setSelectReset(false);
     }
   }, [dispatch, searchParams, searchTerm]);
 
   const handleSearch = (query: string) => {
     const trimmedQuery = query.trim();
     dispatch(setSearchTerm(trimmedQuery));
+    setSelectReset(true);
     setSearchParams({ query: trimmedQuery, page: '1' });
   };
 
@@ -73,16 +79,25 @@ const Home: React.FC = () => {
   const handleDownload = () => {
     const selectedComics = data?.comics?.filter((comic) => selectedItems.includes(comic.uid)) || [];
 
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + selectedComics.map((comic) => `${comic.title},${comic.description},${comic.detailsUrl}`).join("\n");
+    const csvContent = selectedComics
+      .map((comic) => `${comic.title},${comic.description},${comic.detailsUrl}`)
+      .join("\n");
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${selectedItems.length}_episodes.csv`);
-    document.body.appendChild(link);
-    link.click();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+
+    const url = URL.createObjectURL(blob);
+
+    setDownloadUrl(url);
   };
+
+  useEffect(() => {
+    if (downloadUrl && linkRef.current) {
+      linkRef.current.click();
+
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+    }
+  }, [downloadUrl]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -129,7 +144,18 @@ const Home: React.FC = () => {
           <Flyout
             selectedCount={selectedItems.length}
             onDownload={handleDownload}
+            reset={selectReset}
           />
+        )}
+        {downloadUrl && (
+          <a
+            href={downloadUrl}
+            download={`${selectedItems.length}_episodes.csv`}
+            style={{ display: 'none' }}
+            ref={linkRef}
+          >
+            Download
+          </a>
         )}
         <div className="error-button-wrapper">
           <ErrorButton />

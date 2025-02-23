@@ -10,7 +10,8 @@
   margin: 0 10px;
   border: none;
   border-radius: 4px;
-  background-color: #d843bbc7;
+  background-color: var(--pagination-button-background-color);
+  border: 1px solid var(--button-border);
 }
 
 .button:disabled:hover {

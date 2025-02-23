@@ -19,8 +19,8 @@
 
 .title {
   font-size: 1.6rem;
-  color: white;
-  border-bottom: 1px solid white;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
   min-height: 2.5rem;
 }
 
@@ -31,7 +31,7 @@
 }
 
 .sub-header {
-  color: white;
+  color: var(--text-color);
   line-height: 1.2rem;
   margin-bottom: 12px;
 }
@@ -44,12 +44,13 @@
 }
 
 .sub-card {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 4px 28px 4px 12px;
   min-width: 200px;
   text-align: center;
-  background-color: rgb(47, 28, 53);
+  background-color: var(--card-bg);
+  color: var(--card-color);
   line-height: 0.8rem;
 }
 

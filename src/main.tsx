@@ -4,13 +4,16 @@ import App from './app/App.tsx';
 import ErrorBoundary from './comps/ErrorBoundary.tsx';
 import { store } from '../src/app/store.ts'; 
 import { Provider } from 'react-redux';
+import { ThemeProvider } from './app/context/ThemeContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </Provider>
+    <ThemeProvider>
+      <Provider store={store}>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </Provider>
+    </ThemeProvider>
   </StrictMode>
 );
