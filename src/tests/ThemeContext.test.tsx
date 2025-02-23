@@ -19,23 +19,17 @@ const TestComponent = () => {
 };
 
 describe('ThemeContext', () => {
-  it('provides initial theme as light', () => {
+  it('provides initial theme as dark', () => {
     render(<TestComponent />);
-
     expect(screen.getByTestId('theme').textContent).toBe('dark');
   });
 
   it('toggles theme between light and dark', async () => {
     render(<TestComponent />);
-
     expect(screen.getByTestId('theme').textContent).toBe('dark');
-
     await userEvent.click(screen.getByText('Toggle Theme'));
-
     expect(screen.getByTestId('theme').textContent).toBe('light');
-
     await userEvent.click(screen.getByText('Toggle Theme'));
-
     expect(screen.getByTestId('theme').textContent).toBe('dark');
   });
 });

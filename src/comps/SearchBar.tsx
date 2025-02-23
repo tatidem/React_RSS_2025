@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SearchBarProps } from '../interfaces';
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialValue }) => {
@@ -7,6 +7,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialValue }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
+
+  useEffect(() => {
+    setQuery(initialValue || '');
+  }, [initialValue]);
 
   const handleSubmit = () => {
     onSearch(query);

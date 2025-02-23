@@ -43,17 +43,21 @@ const Home: React.FC = () => {
   useEffect(() => {
     const initialQuery = searchParams.get('query') || '';
     if (initialQuery !== searchTerm) {
-      dispatch(setSearchTerm(initialQuery));
       setSelectReset(false);
+      dispatch(setSearchTerm(initialQuery));
     }
   }, [dispatch, searchParams, searchTerm]);
 
-  const handleSearch = (query: string) => {
-    const trimmedQuery = query.trim();
-    dispatch(setSearchTerm(trimmedQuery));
-    setSelectReset(true);
-    setSearchParams({ query: trimmedQuery, page: '1' });
-  };
+  const handleSearch = useCallback(
+    (query: string) => {
+      if (query === searchTerm) return;
+      const trimmedQuery = query.trim();
+      dispatch(setSearchTerm(trimmedQuery));
+      setSelectReset(true);
+      setSearchParams({ query: trimmedQuery, page: '1' });
+    },
+    [dispatch, setSearchParams, searchTerm]
+  );
 
   const handlePageChange = (page: number) => {
     setSearchParams({ query: searchTerm, page: page.toString() });
@@ -82,7 +86,6 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (downloadUrl && linkRef.current) {
       linkRef.current.click();
-
       URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(null);
     }
