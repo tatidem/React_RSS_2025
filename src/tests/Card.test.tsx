@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Card from '../comps/Card';
+import Card from '../comps/card/Card';
 import { Comic } from '../interfaces';
 
 vi.mock('../utils/description', () => ({
@@ -77,9 +77,7 @@ describe('Card Component', () => {
         onCheckboxChange={mockOnCheckboxChange}
       />
     );
-    expect(
-      screen.queryByText('This is a test comic description.')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('This is a test comic description.')).not.toBeInTheDocument();
   });
 
   it('renders the checkbox with correct checked state', () => {

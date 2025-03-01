@@ -1,0 +1,6 @@
+.search-bar {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+}

@@ -1,23 +1,25 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ErrorBoundary from '../comps/ErrorBoundary';
+import ErrorBoundary from '../comps/errorBoundary/ErrorBoundary';
 
+let error = true;
+const childComponent = <div>Child Component</div>;
 const ErrorComponent = () => {
-  throw new Error('Test error');
+  if (error) {
+    throw new Error('Test error');
+  } else {
+    return childComponent;
+  }
 };
 
 describe('ErrorBoundary', () => {
   it('renders children when there is no error', () => {
-    render(
-      <ErrorBoundary>
-        <div>Child Component</div>
-      </ErrorBoundary>
-    );
+    render(<ErrorBoundary>{childComponent}</ErrorBoundary>);
     expect(screen.getByText('Child Component')).toBeInTheDocument();
   });
 
   it('renders error message when there is an error', () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(globalThis.console, 'error').mockImplementation(() => {});
 
     render(
       <ErrorBoundary>
@@ -25,11 +27,12 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(
-      screen.getByText('Something went wrong. Please try again.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Something went wrong. Please try again.')).toBeInTheDocument();
     expect(screen.getByText('Star★Error')).toBeInTheDocument();
     expect(screen.getByText('Reset Error')).toBeInTheDocument();
+    error = false;
+    fireEvent.click(screen.getByText('Reset Error'));
+    expect(screen.getByText('Child Component')).toBeInTheDocument();
     vi.restoreAllMocks();
   });
 });

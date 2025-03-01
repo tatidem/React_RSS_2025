@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import Nothing from '../comps/Nothing';
+import Nothing from '../comps/nothing/Nothing';
 import { NothingProps } from '../interfaces';
 
 describe('Nothing', () => {

@@ -13,7 +13,7 @@ const selectedItemsSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, action: PayloadAction<string>) => {
-      state.items.push(action.payload);
+      state.items = [...state.items, action.payload];
     },
     removeItem: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item !== action.payload);

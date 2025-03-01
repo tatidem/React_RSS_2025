@@ -1,0 +1,67 @@
+.detailed {
+  height: 100%;
+}
+
+.dt-wrapper {
+  padding-bottom: 20px;
+}
+
+.dt-wrapper h2 {
+  display: inline-block;
+  padding: 8px;
+  margin-bottom: 0;
+}
+
+.close-button {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 1.6rem;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  min-height: 2.5rem;
+}
+
+.text-gray {
+  font-style: italic;
+  font-weight: normal;
+  line-height: 0.5rem;
+}
+
+.sub-header {
+  color: var(--text-color);
+  line-height: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.sub-card {
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 4px 28px 4px 12px;
+  min-width: 200px;
+  text-align: center;
+  background-color: var(--card-bg);
+  color: var(--card-color);
+  line-height: 0.8rem;
+}
+
+.list {
+  list-style: inside;
+  list-style-position: outside;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.sub-list {
+  line-height: 1.5rem;
+  font-weight: bold;
+}

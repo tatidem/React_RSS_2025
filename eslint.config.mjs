@@ -9,9 +9,9 @@ export default tseslint.config(
   { ignores: ['dist', 'public', 'coverage'] },
   {
     extends: [
-      js.configs.recommended, 
+      js.configs.recommended,
       ...tseslint.configs.recommended,
-      eslintPluginPrettierRecommended
+      eslintPluginPrettierRecommended,
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -24,10 +24,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   }
 );

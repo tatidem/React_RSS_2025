@@ -1,122 +1,144 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import CardList from '../comps/CardList';
-import { Comic } from '../interfaces';
+import CardList from '../comps/cardList/CardList';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { ITEMS_PER_PAGE } from '../app/constants';
+import { generateMockData } from './utils/generateMockData';
 
-vi.mock('../comps/Card', () => ({
-  default: vi.fn(({ index, comic, onClick }) => (
+vi.mock('react-redux', () => ({
+  useSelector: vi.fn(),
+  useDispatch: vi.fn(),
+}));
+
+vi.mock('react-router-dom', () => ({
+  useSearchParams: vi.fn(),
+  useNavigate: vi.fn(),
+  useLocation: vi.fn(),
+}));
+
+vi.mock('../comps/card/Card', () => ({
+  default: vi.fn(({ index, comic, onClick, isSelected, onCheckboxChange }) => (
     <div data-testid="card" onClick={onClick}>
       {index} - {comic.title}
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={onCheckboxChange}
+        data-testid={`checkbox-${comic.uid}`}
+      />
     </div>
   )),
 }));
 
-vi.mock('../comps/Nothing', () => ({
-  default: vi.fn(({ empty }) => (
-    <div data-testid="nothing">{empty ? 'No results' : ''}</div>
-  )),
+vi.mock('../comps/nothing/Nothing', () => ({
+  default: vi.fn(({ empty }) => <div data-testid="nothing">{empty ? 'No results' : ''}</div>),
 }));
 
-describe('CardList', () => {
-  const mockResults: Comic[] = [
-    {
-      uid: '1',
-      title: 'Comic 1',
-      publishedYear: 2020,
-      publishedMonth: 1,
-      publishedDay: 15,
-      coverYear: null,
-      coverMonth: null,
-      coverDay: null,
-      numberOfPages: 32,
-      stardateFrom: 1234.5,
-      stardateTo: 1235.5,
-      yearFrom: null,
-      yearTo: null,
-      photonovel: false,
-      adaptation: false,
-      detailsUrl: 'https://example.com/comic1',
-    },
-    {
-      uid: '2',
-      title: 'Comic 2',
-      publishedYear: 2021,
-      publishedMonth: 5,
-      publishedDay: 20,
-      coverYear: null,
-      coverMonth: null,
-      coverDay: null,
-      numberOfPages: 48,
-      stardateFrom: 2345.6,
-      stardateTo: 2346.6,
-      yearFrom: null,
-      yearTo: null,
-      photonovel: true,
-      adaptation: true,
-      detailsUrl: 'https://example.com/comic2',
-    },
-  ];
+describe('CardList', async () => {
+  const mockDispatch = vi.fn();
+  const mockNavigate = vi.fn();
+  const mockSetSearchParams = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useDispatch).mockReturnValue(mockDispatch);
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(useSearchParams).mockReturnValue([
+      new URLSearchParams('page=1'),
+      mockSetSearchParams,
+    ]);
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    });
+    vi.mocked(useSelector).mockImplementation((selector) =>
+      selector({
+        search: { searchTerm: '' },
+        selectedItems: { items: [] },
+      })
+    );
+  });
 
   it('renders Nothing component when results are empty', () => {
-    render(
-      <CardList
-        results={[]}
-        empty={true}
-        offset={0}
-        onCardClick={vi.fn()}
-        selectedItems={[]}
-        onCheckboxChange={() => {}}
-      />
-    );
-
+    render(<CardList data={undefined} />);
     const nothingElement = screen.getByTestId('nothing');
     expect(nothingElement).toBeInTheDocument();
     expect(nothingElement).toHaveTextContent('No results');
   });
 
   it('renders list of Card components when results are provided', () => {
-    const mockOffset = 10;
-    const mockOnCardClick = vi.fn();
-
-    render(
-      <CardList
-        results={mockResults}
-        empty={false}
-        offset={mockOffset}
-        onCardClick={mockOnCardClick}
-        selectedItems={[]}
-        onCheckboxChange={() => {}}
-      />
-    );
-
+    const mockData = generateMockData();
+    render(<CardList data={mockData} />);
     const cardElements = screen.getAllByTestId('card');
-    expect(cardElements).toHaveLength(mockResults.length);
-
+    expect(cardElements).toHaveLength(mockData.comics.length);
     cardElements.forEach((card, index) => {
-      expect(card).toHaveTextContent(
-        `${mockOffset + index + 1} - ${mockResults[index].title}`
-      );
+      expect(card).toHaveTextContent(`${index + 1} - ${mockData.comics[index].title}`);
     });
   });
 
-  it('calls onCardClick when a card is clicked', () => {
-    const mockOffset = 10;
-    const mockOnCardClick = vi.fn();
-
-    render(
-      <CardList
-        results={mockResults}
-        empty={false}
-        offset={mockOffset}
-        onCardClick={mockOnCardClick}
-        selectedItems={[]}
-        onCheckboxChange={() => {}}
-      />
-    );
-
+  it('calls handleCardClick when a card is clicked', () => {
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    });
+    const mockData = generateMockData();
+    render(<CardList data={mockData} />);
     const cardElements = screen.getAllByTestId('card');
-    cardElements[0].click();
+    fireEvent.click(cardElements[0]);
+    expect(mockNavigate).toHaveBeenCalledWith('/detailed/1');
+  });
 
-    expect(mockOnCardClick).toHaveBeenCalledWith(mockResults[0].uid);
+  it('does not call handleCardClick when a card is clicked on the detailed page', () => {
+    cleanup();
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/detailed/1',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    });
+    const mockData = generateMockData();
+    render(<CardList data={mockData} />);
+    const cardElements = screen.getAllByTestId('card');
+    fireEvent.click(cardElements[0]);
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('dispatches addItem action when a checkbox is unchecked', () => {
+    const mockData = generateMockData();
+    render(<CardList data={mockData} />);
+    const checkbox = screen.getByTestId('checkbox-1');
+    fireEvent.click(checkbox, { target: { checked: false } });
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'selectedItems/addItem', payload: '1' });
+  });
+
+  it('dispatches removeItem action when a checkbox is checked', () => {
+    const mockData = generateMockData();
+    render(<CardList data={mockData} />);
+    const checkbox = screen.getByTestId('checkbox-1');
+    fireEvent.click(checkbox, { target: { checked: true } });
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'selectedItems/removeItem', payload: '1' });
+  });
+
+  it('renders pagination only when items exceed ITEMS_PER_PAGE', () => {
+    const mockData = generateMockData(ITEMS_PER_PAGE + 1);
+    render(<CardList data={mockData} />);
+    const pagination = screen.getByRole('navigation');
+    expect(pagination).toBeInTheDocument();
+  });
+
+  it('calls handlePageChange when pagination is changed', () => {
+    const mockData = generateMockData(ITEMS_PER_PAGE + 1);
+    render(<CardList data={mockData} />);
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    fireEvent.click(nextButton);
+    expect(mockSetSearchParams).toHaveBeenCalledWith(expect.objectContaining({ page: '2' }));
   });
 });

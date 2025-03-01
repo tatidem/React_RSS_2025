@@ -1,9 +1,8 @@
-// main.test.tsx
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '../app/context/ThemeContext';
-import ErrorBoundary from '../comps/ErrorBoundary';
+import ErrorBoundary from '../comps/errorBoundary/ErrorBoundary';
 import App from '../app/App';
 import { store } from '../app/store';
 

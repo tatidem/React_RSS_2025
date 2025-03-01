@@ -1,13 +1,6 @@
-import Detailed from '../pages/detailed';
+import Detailed from '../pages/detailed/Detailed';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useParams,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { describe, it, expect, vi, afterEach, beforeEach, Mock } from 'vitest';
 import { useGetComicDetailsQuery } from '../app/apiSlice';
 
@@ -47,7 +40,7 @@ const mockComicDetails = {
   publishers: [{ uid: '012', name: 'Mock Publisher' }],
 };
 
-vi.mock('../comps/LoadingSpinner', () => {
+vi.mock('../comps/loadingSpinner/LoadingSpinner', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="loading-spinner">Loading...</div>,
@@ -111,26 +104,18 @@ describe('Detailed Component', () => {
         screen.getByText(`Number of Pages: ${mockComicDetails.numberOfPages}`)
       ).toBeInTheDocument();
       expect(screen.getByText('Series')).toBeInTheDocument();
-      expect(
-        screen.getByText(mockComicDetails.comicSeries[0].title)
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockComicDetails.comicSeries[0].title)).toBeInTheDocument();
       expect(
         screen.getByText(
           `Published: ${mockComicDetails.comicSeries[0].publishedYearFrom} - ${mockComicDetails.comicSeries[0].publishedYearTo}`
         )
       ).toBeInTheDocument();
       expect(screen.getByText('Writers')).toBeInTheDocument();
-      expect(
-        screen.getByText(mockComicDetails.writers[0].name)
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockComicDetails.writers[0].name)).toBeInTheDocument();
       expect(screen.getByText('Artists')).toBeInTheDocument();
-      expect(
-        screen.getByText(mockComicDetails.artists[0].name)
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockComicDetails.artists[0].name)).toBeInTheDocument();
       expect(screen.getByText('Publishers')).toBeInTheDocument();
-      expect(
-        screen.getByText(mockComicDetails.publishers[0].name)
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockComicDetails.publishers[0].name)).toBeInTheDocument();
     });
   });
 
@@ -184,5 +169,25 @@ describe('Detailed Component', () => {
     fireEvent.mouseUp(titleElement);
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('render error loading comic details', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      isError: true,
+    });
+    render(memRender);
+    await waitFor(() => {
+      expect(screen.getByText('Error loading comic details.')).toBeInTheDocument();
+    });
+  });
+
+  it('render no data found', async () => {
+    (useGetComicDetailsQuery as Mock).mockReturnValue({
+      data: null,
+    });
+    render(memRender);
+    await waitFor(() => {
+      expect(screen.getByText('No comic data found.')).toBeInTheDocument();
+    });
   });
 });

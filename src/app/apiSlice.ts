@@ -1,12 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { ComicDetail, SearchResult } from '../interfaces';
+import { minDelayFetchBaseQuery } from '../utils/delay';
 
 export const baseUrl = 'https://stapi.co/api/v1/rest';
 export const detailUrl = baseUrl + '/comics?uid=';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: minDelayFetchBaseQuery,
   endpoints: (builder) => ({
     searchComics: builder.query<SearchResult, string>({
       query: (name) => ({

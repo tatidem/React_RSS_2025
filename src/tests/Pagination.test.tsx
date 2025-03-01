@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import Pagination from '../comps/Pagination';
+import Pagination from '../comps/pagination/Pagination';
 import { PaginationProps } from '../interfaces';
 
 describe('Pagination Component', () => {
@@ -17,6 +17,10 @@ describe('Pagination Component', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders without errors', () => {
     render(<Pagination {...defaultProps} />);
     expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
@@ -25,7 +29,7 @@ describe('Pagination Component', () => {
   it('renders the correct page information', () => {
     render(<Pagination {...defaultProps} />);
     expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
-
+    cleanup();
     render(<Pagination {...{ ...defaultProps, currentPage: 2 }} />);
     expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
 
@@ -42,41 +46,47 @@ describe('Pagination Component', () => {
 
   it('calls onPageChange with the previous page when clicking "Previous"', () => {
     render(<Pagination {...{ ...defaultProps, currentPage: 2 }} />);
-    const prevButton = screen.getByText('Previous');
-    fireEvent.click(prevButton);
+    fireEvent.click(screen.getByText('Previous'));
     expect(mockOnPageChange).toHaveBeenCalledWith(1);
   });
 
   it('calls onPageChange with the next page when clicking "Next"', () => {
     render(<Pagination {...defaultProps} />);
-    const nextButton = screen.getByText('Next');
-    fireEvent.click(nextButton);
+    fireEvent.click(screen.getByText('Next'));
     expect(mockOnPageChange).toHaveBeenCalledWith(2);
   });
 
   it('disables the "Previous" button when on the first page', () => {
     render(<Pagination {...defaultProps} />);
-    const prevButton = screen.getByText('Previous');
-    expect(prevButton).toBeDisabled();
+    expect(screen.getByText('Previous')).toBeDisabled();
   });
 
   it('disables the "Next" button when on the last page', () => {
     render(<Pagination {...{ ...defaultProps, currentPage: 2 }} />);
-    const nextButton = screen.getByText('Next');
-    expect(nextButton).toBeDisabled();
+    expect(screen.getByText('Next')).toBeDisabled();
   });
 
   it('does not call onPageChange when clicking "Previous" on the first page', () => {
     render(<Pagination {...defaultProps} />);
-    const prevButton = screen.getByText('Previous');
-    fireEvent.click(prevButton);
+    fireEvent.click(screen.getByText('Previous'));
     expect(mockOnPageChange).not.toHaveBeenCalled();
   });
 
   it('does not call onPageChange when clicking "Next" on the last page', () => {
     render(<Pagination {...{ ...defaultProps, currentPage: 2 }} />);
-    const nextButton = screen.getByText('Next');
-    fireEvent.click(nextButton);
+    fireEvent.click(screen.getByText('Next'));
+    expect(mockOnPageChange).not.toHaveBeenCalled();
+  });
+
+  it('does not call onPageChange when currentPage >= totalPages', () => {
+    render(<Pagination {...{ ...defaultProps, currentPage: 2, totalItems: 10 }} />);
+    fireEvent.click(screen.getByText('Next'));
+    expect(mockOnPageChange).not.toHaveBeenCalled();
+  });
+
+  it('does not call onPageChange when currentPage <= 1', () => {
+    render(<Pagination {...{ ...defaultProps, currentPage: 0 }} />);
+    fireEvent.click(screen.getByText('Previous'));
     expect(mockOnPageChange).not.toHaveBeenCalled();
   });
 });

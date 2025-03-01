@@ -257,8 +257,7 @@ export interface Character {
 }
 
 export interface SearchBarProps {
-  onSearch: (query: string) => void;
-  initialValue: string;
+  initialValue?: string;
 }
 
 export interface CardProps {
@@ -273,13 +272,12 @@ export interface NothingProps {
   empty: boolean;
 }
 
+export interface FlyoutProps {
+  data: SearchResult | undefined;
+}
+
 export interface CardListProps {
-  results: Comic[];
-  empty: boolean;
-  offset: number;
-  onCardClick: (id: string) => void;
-  selectedItems: string[];
-  onCheckboxChange: (uid: string, isChecked: boolean) => void;
+  data: SearchResult | undefined;
 }
 
 export interface ErrorBoundaryState {

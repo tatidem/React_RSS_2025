@@ -1,17 +1,3 @@
-/* :root {
-  --font-family: Arial, sans-serif;
-  --line-height: 1.2;
-  --font-weight: 400;
-  --scrollbar-thumb-hover: #7c507a;
-  --input-focus-border: #66afe9;
-  --input-focus-shadow: rgba(102, 175, 233, 0.6);
-  --button-focus-border: #4e5962;
-  --button-disabled-bg: #cccccc;
-  --neon-glow: #ff4da6;
-  --error-color: rgb(173, 0, 95);
-}
- */
-
 .dark {
   --text-color: rgba(204, 204, 204, 0.75);
   --bg-color: #270b26;
@@ -114,7 +100,7 @@ body {
 input {
   font-size: 1.2rem;
   border-radius: 12px;
-  color:  var(--input-text-color);
+  color: var(--input-text-color);
   padding: 5px 10px;
   border: 1px solid var(--input-border);
   box-shadow: 0 2px 12px var(--input-shadow);

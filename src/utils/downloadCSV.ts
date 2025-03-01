@@ -7,8 +7,7 @@ export const downloadCSV = (
   selectedItems: string[],
   setDownloadUrl: React.Dispatch<React.SetStateAction<string | null>>
 ) => {
-  const selectedComics =
-    data?.comics?.filter((comic) => selectedItems.includes(comic.uid)) || [];
+  const selectedComics = data?.comics?.filter((comic) => selectedItems.includes(comic.uid)) || [];
 
   const escapeCsv = (value: string) => {
     if (value.includes(',') || value.includes('"') || value.includes('\n')) {
@@ -25,9 +24,7 @@ export const downloadCSV = (
   };
 
   const csvHeader = 'Title, Description, URL';
-  const csvContent = [csvHeader]
-    .concat(selectedComics.map(processComic))
-    .join('\n');
+  const csvContent = [csvHeader].concat(selectedComics.map(processComic)).join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
 

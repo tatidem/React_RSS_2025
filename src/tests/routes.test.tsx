@@ -3,7 +3,7 @@ import { MemoryRouter, Outlet } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
 import { AppRoutes } from '../app/routes';
 
-vi.mock('../pages/home', () => ({
+vi.mock('../pages/home/Home', () => ({
   default: () => (
     <div>
       <div>Home Page</div>
@@ -12,11 +12,11 @@ vi.mock('../pages/home', () => ({
   ),
 }));
 
-vi.mock('../pages/detailed', () => ({
+vi.mock('../pages/detailed/Detailed', () => ({
   default: () => <div>Detailed Page</div>,
 }));
 
-vi.mock('../pages/NotFound', () => ({
+vi.mock('../pages/notFound/NotFound', () => ({
   default: () => <div>Not Found Page</div>,
 }));
 
