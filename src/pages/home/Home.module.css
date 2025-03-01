@@ -1,0 +1,117 @@
+.app {
+  text-align: center;
+}
+
+.header {
+  text-align: center;
+  font-size: 2em;
+  font-weight: 500;
+  user-select: none;
+  background-color: transparent;
+  color: var(--header-color);
+}
+
+.footer {
+  height: 24px;
+}
+
+.error {
+  color: var(--error-color);
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error button {
+  width: auto;
+}
+
+@keyframes neonGlow {
+  0% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px var(--neon-glow),
+      0 0 15px var(--neon-glow),
+      0 0 20px var(--neon-glow),
+      0 0 25px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 35px var(--neon-glow);
+  }
+  50% {
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 40px var(--neon-glow),
+      0 0 50px var(--neon-glow),
+      0 0 60px var(--neon-glow),
+      0 0 70px var(--neon-glow);
+  }
+  100% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px var(--neon-glow),
+      0 0 15px var(--neon-glow),
+      0 0 20px var(--neon-glow),
+      0 0 25px var(--neon-glow),
+      0 0 30px var(--neon-glow),
+      0 0 35px var(--neon-glow);
+  }
+}
+
+.header {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  font-size: 3rem;
+  color: var(--header-color);
+  text-align: center;
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes randomGlow {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.header {
+  animation:
+    neonGlow 1.5s ease-in-out infinite alternate,
+    randomGlow 3s ease-in-out infinite;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+.left-section {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.right-section {
+  flex: 1;
+  border-left: 1px solid var(--border-color);
+  padding-left: 20px;
+}
+
+.error-button-wrapper {
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+  align-items: center;
+  height: 54px;
+  margin-bottom: 32px;
+}
+
+.error-button-wrapper button {
+  height: auto;
+  width: auto;
+}

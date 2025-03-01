@@ -1,62 +1,129 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import SearchBar from '../comps/SearchBar';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { useSearchParams } from 'react-router-dom';
+import SearchBar from '../comps/searchBar/SearchBar';
+import searchReducer from '../app/searchSlice';
+import selectedItemsReducer from '../app/selectedItemsSlice';
 
-describe('SearchBar Component', () => {
+vi.mock('react-router-dom', () => ({
+  useSearchParams: vi.fn(),
+}));
 
-  it('renders without errors', () => {
-    const mockOnSearch = vi.fn();
-    render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
+const createTestStore = (
+  initialState = { search: { searchTerm: '' }, selectedItems: { items: [] } }
+) => {
+  return configureStore({
+    reducer: {
+      search: searchReducer,
+      selectedItems: selectedItemsReducer,
+    },
+    preloadedState: initialState,
+  });
+};
+
+describe('SearchBar', () => {
+  const mockSetSearchParams = vi.fn();
+  const mockSearchParams = (searchTerm: string) => {
+    vi.mocked(useSearchParams).mockReturnValue([
+      new URLSearchParams({ query: searchTerm }),
+      mockSetSearchParams,
+    ]);
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders input and button', () => {
+    const store = createTestStore();
+    mockSearchParams('');
+
+    render(
+      <Provider store={store}>
+        <SearchBar />
+      </Provider>
+    );
+
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
   });
 
-  it('renders with the initial value', () => {
-    const mockOnSearch = vi.fn();
-    render(<SearchBar onSearch={mockOnSearch} initialValue="initial search" />);
-    expect(screen.getByRole('textbox')).toHaveValue('initial search');
+  it('updates query state on input change', () => {
+    const store = createTestStore();
+    mockSearchParams('');
+
+    render(
+      <Provider store={store}>
+        <SearchBar />
+      </Provider>
+    );
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'test query' } });
+    expect(input).toHaveValue('test query');
   });
 
-  it('updates the input value when typing', () => {
-    const mockOnSearch = vi.fn();
-    render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
-    const inputElement = screen.getByRole('textbox');
-    fireEvent.change(inputElement, { target: { value: 'new search' } });
-    expect(inputElement).toHaveValue('new search');
-  });
+  it('calls handleSearch with trimmed query on button click', async () => {
+    const store = createTestStore();
+    mockSearchParams('test query');
 
-  it('calls onSearch with the current input value when clicking "Search"', () => {
-    const mockOnSearch = vi.fn();
-    render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
-    const inputElement = screen.getByRole('textbox');
-    fireEvent.change(inputElement, { target: { value: 'test search' } });
+    render(
+      <Provider store={store}>
+        <SearchBar />
+      </Provider>
+    );
 
-    const searchButton = screen.getByRole('button', { name: 'Search' });
-    fireEvent.click(searchButton);
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: '  test query  ' } });
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
 
-    expect(mockOnSearch).toHaveBeenCalledWith('test search');
-  });
-
-  it('calls onSearch with the trimmed input value', () => {
-        const mockOnSearch = vi.fn();
-        render(<SearchBar onSearch={mockOnSearch} initialValue="" />);
-        const inputElement = screen.getByRole('textbox');
-        fireEvent.change(inputElement, { target: { value: '  test search  ' } });
-
-        const searchButton = screen.getByRole('button', { name: 'Search' });
-        fireEvent.click(searchButton);
-
-        expect(mockOnSearch).toHaveBeenCalledWith('  test search  ');
+    await waitFor(() => {
+      expect(mockSetSearchParams).toHaveBeenCalledWith({ query: 'test query', page: '1' });
+      expect(store.getState().search.searchTerm).toBe('test query');
     });
+  });
 
-    it('calls onSearch with initialValue if search button is clicked without changing input', () => {
-        const mockOnSearch = vi.fn();
-        render(<SearchBar onSearch={mockOnSearch} initialValue="initial search" />);
-
-        const searchButton = screen.getByRole('button', { name: 'Search' });
-        fireEvent.click(searchButton);
-
-        expect(mockOnSearch).toHaveBeenCalledWith('initial search');
+  it('syncs searchTerm from Redux with query state on mount', async () => {
+    const initialTerm = 'initial term';
+    const store = createTestStore({
+      search: { searchTerm: initialTerm },
+      selectedItems: { items: [] },
     });
+    mockSearchParams(initialTerm);
+    render(
+      <Provider store={store}>
+        <SearchBar />
+      </Provider>
+    );
+    const input = screen.getByRole('textbox');
+    await waitFor(() => {
+      expect(input).toHaveValue(initialTerm);
+    });
+  });
 
+  it('does not call handleSearch if query is the same as searchTerm', async () => {
+    const initialTerm = 'test query';
+    const store = createTestStore({
+      search: { searchTerm: initialTerm },
+      selectedItems: { items: [] },
+    });
+    mockSearchParams(initialTerm);
+
+    render(
+      <Provider store={store}>
+        <SearchBar />
+      </Provider>
+    );
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: initialTerm } });
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
+    await waitFor(() => {
+      expect(mockSetSearchParams).not.toHaveBeenCalled();
+    });
+  });
 });

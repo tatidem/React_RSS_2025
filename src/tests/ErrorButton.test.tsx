@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ErrorButton } from '../comps/ErrorButton';
+import { ErrorButton } from '../comps/errorButton/ErrorButton';
 
 describe('ErrorButton', () => {
   it('renders the button', () => {
@@ -10,7 +10,7 @@ describe('ErrorButton', () => {
   });
 
   it('throws an error when the button is clicked', () => {
-    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorMock = vi.spyOn(globalThis.console, 'error').mockImplementation(() => {});
     try {
       render(<ErrorButton />);
       const button = screen.getByText('Error Button');
@@ -23,5 +23,4 @@ describe('ErrorButton', () => {
     expect(consoleErrorMock).toHaveBeenCalled();
     consoleErrorMock.mockRestore();
   });
-
 });

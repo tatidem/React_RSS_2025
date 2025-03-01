@@ -17,6 +17,7 @@ export interface Comic {
   photonovel: boolean;
   adaptation: boolean;
   description?: string;
+  detailsUrl: string;
 }
 
 export interface ComicDetail extends Comic {
@@ -256,25 +257,27 @@ export interface Character {
 }
 
 export interface SearchBarProps {
-  onSearch: (query: string) => void;
-  initialValue: string;
+  initialValue?: string;
 }
 
 export interface CardProps {
   index: number;
   comic: Comic;
   onClick: () => void;
+  isSelected: boolean;
+  onCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface NothingProps {
   empty: boolean;
 }
 
+export interface FlyoutProps {
+  data: SearchResult | undefined;
+}
+
 export interface CardListProps {
-  results: Comic[];
-  empty: boolean;
-  offset: number;
-  onCardClick: (id: string) => void;
+  data: SearchResult | undefined;
 }
 
 export interface ErrorBoundaryState {

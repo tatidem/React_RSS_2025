@@ -1,0 +1,25 @@
+:root {
+  background-color: #c099bf;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.error-wrapper {
+  height: auto;
+}
+
+.header {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 3rem;
+  color: #26172c;
+  text-align: center;
+}
+
+button {
+  border: 1px solid #26172c;
+  margin-top: 18px;
+  width: auto;
+}
