@@ -1,4 +1,4 @@
-import style from './404.module.css';
+import style from './not-found.module.css';
 
 const NotFound: React.FC = () => {
   return (

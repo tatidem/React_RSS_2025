@@ -1,8 +1,8 @@
 .item {
-  color: #ecb5e5;
+  color: var(--text-color);
   text-align: center;
   font-size: 1.5rem;
-  padding: 20px;
+  padding: 20px; 
 }
 
 .stars {

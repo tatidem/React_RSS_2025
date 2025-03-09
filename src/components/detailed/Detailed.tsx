@@ -1,22 +1,24 @@
+'use client';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useGetComicDetailsQuery } from '@/core/apiSlice';
 import LoadingSpinner from '@/components/loadingSpinner/LoadingSpinner';
 import style from './Detailed.module.css';
 
 const Detailed: React.FC = () => {
   const router = useRouter();
-  const { uid } = router.query;
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const uid = params.uid as string;
+
   const detailedRef = useRef<HTMLDivElement>(null);
 
-  const { data: comic, isLoading, isError } = useGetComicDetailsQuery(uid as string);
+  const { data: comic, isLoading, isError } = useGetComicDetailsQuery(uid);
 
   const handleClose = useCallback(() => {
-    router.push({
-      pathname: '/',
-      query: router.query,
-    });
-  }, [router]);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    router.push(`/?${newSearchParams.toString()}`);
+  }, [router, searchParams]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

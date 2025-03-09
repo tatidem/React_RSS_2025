@@ -1,5 +1,6 @@
+'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchBarProps } from '../../interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchTerm } from '@/core/searchSlice';
@@ -10,6 +11,7 @@ import style from './SearchBar.module.css';
 const SearchBar: React.FC<SearchBarProps> = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
   const [query, setQuery] = useState(searchTerm || '');
 
@@ -19,12 +21,14 @@ const SearchBar: React.FC<SearchBarProps> = () => {
       const trimmedQuery = query.trim();
       dispatch(setSearchTerm(trimmedQuery));
       dispatch(unselectAll());
-      router.push({
-        pathname: router.pathname,
-        query: { ...router.query, query: trimmedQuery, page: '1' },
-      });
+
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set('query', trimmedQuery);
+      newSearchParams.set('page', '1');
+
+      router.push(`?${newSearchParams.toString()}`);
     },
-    [dispatch, router, searchTerm]
+    [dispatch, router, searchTerm, searchParams]
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,12 +36,12 @@ const SearchBar: React.FC<SearchBarProps> = () => {
   };
 
   useEffect(() => {
-    const initialQuery = (router.query.query as string) || '';
+    const initialQuery = searchParams.get('query') || '';
     if (initialQuery !== searchTerm) {
       dispatch(setSearchTerm(initialQuery));
     }
     setQuery(searchTerm || '');
-  }, [dispatch, router.query, searchTerm]);
+  }, [dispatch, searchParams, searchTerm]);
 
   return (
     <div className={style['search-bar']}>
