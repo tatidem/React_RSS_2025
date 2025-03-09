@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ThemeWrapper from '@/components/themeWrapper/themeWrapper';
+import ThemeWrapper from '../components/themeWrapper/themeWrapper';
 
-vi.mock('@/components/themeSwitcher/ThemeSwitcher', () => ({
+vi.mock('../components/themeSwitcher/ThemeSwitcher', () => ({
   default: () => <div data-testid="theme-switcher">Theme Switcher</div>,
 }));
 
-vi.mock('@/components/errorBoundary/ErrorBoundary', () => ({
+vi.mock('../components/errorBoundary/ErrorBoundary', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="error-boundary">{children}</div>
   ),

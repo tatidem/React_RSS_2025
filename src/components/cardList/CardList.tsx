@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams, useLocation } from 'react-router';
 import { CardListProps } from '../../interfaces';
 import Card from '../card/Card';
 import Nothing from '../nothing/Nothing';
@@ -13,6 +13,7 @@ import { ITEMS_PER_PAGE } from '../../core/constants';
 const CardList: React.FC<CardListProps> = ({ data }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
@@ -28,12 +29,12 @@ const CardList: React.FC<CardListProps> = ({ data }) => {
 
   const handleCardClick = useCallback(
     (cardUid: string) => {
-      if (window.location.pathname === '/') {
+      if (location?.pathname === '/') {
         const newSearchParams = new URLSearchParams(searchParams.toString());
         navigate(`/detailed/${cardUid}?${newSearchParams.toString()}`);
       }
     },
-    [navigate, searchParams]
+    [navigate, location, searchParams]
   );
 
   const handlePageChange = (page: number) => {

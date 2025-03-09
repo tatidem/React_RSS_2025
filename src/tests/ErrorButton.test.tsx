@@ -1,7 +1,7 @@
-import { ErrorButton } from '@/components/errorButton/ErrorButton';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi, describe, it, expect } from 'vitest';
 import ErrorBoundarySimple from './utils/ErrorBoundarySimple';
+import { ErrorButton } from '../components/errorButton/ErrorButton';
 
 describe('ErrorButton', () => {
   it('renders the button', () => {

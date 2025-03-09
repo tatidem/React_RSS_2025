@@ -1,6 +1,6 @@
-import NotFound from '@/components/notFound/NotFound';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import NotFound from '../components/notFound/NotFound';
 
 describe('NotFound', () => {
   it('renders the 404 heading', () => {

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Comic } from '../interfaces';
-import Card from '@/components/card/Card';
+import Card from '../components/card/Card';
 
-vi.mock('@/core/utils/description', () => ({
+vi.mock('../core/utils/description', () => ({
   getDescription: vi.fn(() => 'Mocked Description'),
 }));
 

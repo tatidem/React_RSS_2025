@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer from '../core/selectedItemsSlice';
 import { generateMockData } from './utils/generateMockData';
-import Flyout from '@/components/flyout/Flyout';
+import Flyout from '../components/flyout/Flyout';
 
 vi.mock('react', async () => {
   const actual = await vi.importActual('react');

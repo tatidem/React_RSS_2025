@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PaginationProps } from '../interfaces';
-import Pagination from '@/components/pagination/Pagination';
+import Pagination from '../components/pagination/Pagination';
 
 describe('Pagination Component', () => {
   const mockOnPageChange = vi.fn();

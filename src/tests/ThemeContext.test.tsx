@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import ThemeContext, { ThemeProvider } from '@/core/context/ThemeContext';
+import ThemeContext, { ThemeProvider } from '../core/context/ThemeContext';
 
 const TestComponent = () => {
   return (
