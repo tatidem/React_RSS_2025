@@ -1,4 +1,4 @@
-import NotFound from '@/pages/404';
+import NotFound from '@/components/notFound/NotFound';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 

@@ -1,11 +1,13 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach, Mock } from 'vitest';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams, useParams, ReadonlyURLSearchParams } from 'next/navigation';
 import Detailed from '@/components/detailed/Detailed';
 import { useGetComicDetailsQuery } from '@/core/apiSlice';
 
-vi.mock('next/router', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+  useParams: vi.fn(),
 }));
 
 vi.mock('@/core/apiSlice', () => ({
@@ -13,8 +15,7 @@ vi.mock('@/core/apiSlice', () => ({
 }));
 
 const uid = 'UID-MOCK';
-const query = '?query=test';
-// const routerPath = `/detailed/${uid}${query}`;
+const query = 'query=test';
 
 const mockComicDetails = {
   uid,
@@ -37,32 +38,21 @@ const mockComicDetails = {
 describe('Detailed Component', () => {
   const mockPush = vi.fn();
   const mockRouter = {
-    pathname: `/detailed/${uid}`,
-    query: { uid, query: 'test' },
     push: mockPush,
-    route: '/detailed/[uid]',
-    asPath: `/detailed/${uid}${query}`,
-    basePath: '',
-    isLocaleDomain: false,
-    replace: vi.fn(),
-    reload: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
     prefetch: vi.fn(),
-    beforePopState: vi.fn(),
-    events: {
-      on: vi.fn(),
-      off: vi.fn(),
-      emit: vi.fn(),
-    },
-    isFallback: false,
-    isReady: true,
-    isPreview: false,
   };
+
+  const mockSearchParams = new URLSearchParams(query);
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useRouter).mockReturnValue(mockRouter);
+    vi.mocked(useSearchParams).mockReturnValue(mockSearchParams as ReadonlyURLSearchParams);
+    vi.mocked(useParams).mockReturnValue({ uid });
   });
 
   afterEach(() => {
@@ -125,10 +115,7 @@ describe('Detailed Component', () => {
     });
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/',
-      query: { query: 'test', uid: 'UID-MOCK' },
-    });
+    expect(mockPush).toHaveBeenCalledWith(`/?${query}`);
   });
 
   it('calls handleClose when clicking outside the detailed component', async () => {
@@ -144,10 +131,7 @@ describe('Detailed Component', () => {
     fireEvent.mouseDown(document.body);
     fireEvent.mouseUp(document.body);
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/',
-      query: { query: 'test', uid: 'UID-MOCK' },
-    });
+    expect(mockPush).toHaveBeenCalledWith(`/?${query}`);
   });
 
   it('does not call handleClose when clicking inside the detailed component', async () => {

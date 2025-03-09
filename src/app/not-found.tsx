@@ -1,12 +1,7 @@
-import style from './not-found.module.css';
+import NotFound from '@/components/notFound/NotFound';
 
-const NotFound: React.FC = () => {
-  return (
-    <div className={style['not-found']}>
-      <h1>404 - Not Found</h1>
-      <p>The page you are looking for does not exist.</p>
-    </div>
-  );
+const Error404: React.FC = () => {
+  return <NotFound />;
 };
 
-export default NotFound;
+export default Error404;

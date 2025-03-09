@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
+import { ReadonlyURLSearchParams, useRouter, useSearchParams } from 'next/navigation';
 import { generateMockData } from './utils/generateMockData';
 import CardList from '@/components/cardList/CardList';
 import { ITEMS_PER_PAGE } from '@/core/constants';
@@ -11,8 +11,9 @@ vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
 }));
 
-vi.mock('next/router', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 vi.mock('@/components/card/Card', () => ({
@@ -37,33 +38,21 @@ describe('CardList', async () => {
   const mockDispatch = vi.fn();
   const mockPush = vi.fn();
   const mockRouter = {
-    pathname: '/',
-    query: { page: '1' },
     push: mockPush,
-    route: '/',
-    asPath: '/',
-    basePath: '',
-    isLocaleDomain: false,
-    replace: vi.fn(),
-    reload: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
     prefetch: vi.fn(),
-    beforePopState: vi.fn(),
-    events: {
-      on: vi.fn(),
-      off: vi.fn(),
-      emit: vi.fn(),
-    },
-    isFallback: false,
-    isReady: true,
-    isPreview: false,
   };
+
+  const mockSearchParams = new URLSearchParams('page=1');
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useDispatch).mockReturnValue(mockDispatch);
     vi.mocked(useRouter).mockReturnValue(mockRouter);
+    vi.mocked(useSearchParams).mockReturnValue(mockSearchParams as ReadonlyURLSearchParams);
     vi.mocked(useSelector).mockImplementation((selector) =>
       selector({
         search: { searchTerm: '' },
@@ -94,17 +83,16 @@ describe('CardList', async () => {
     render(<CardList data={mockData} />);
     const cardElements = screen.getAllByTestId('card');
     fireEvent.click(cardElements[0]);
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/detailed/1',
-      query: { page: '1' },
-    });
+    expect(mockPush).toHaveBeenCalledWith('/detailed/1?page=1');
   });
 
   it('does not call handleCardClick when a card is clicked on the detailed page', () => {
     cleanup();
-    vi.mocked(useRouter).mockReturnValue({
-      ...mockRouter,
-      pathname: '/detailed/1',
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/detailed/1',
+      },
+      writable: true,
     });
     const mockData = generateMockData();
     render(<CardList data={mockData} />);
@@ -141,9 +129,6 @@ describe('CardList', async () => {
     render(<CardList data={mockData} />);
     const nextButton = screen.getByRole('button', { name: /next/i });
     fireEvent.click(nextButton);
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/',
-      query: { page: '2' },
-    });
+    expect(mockPush).toHaveBeenCalledWith('?page=2');
   });
 });
