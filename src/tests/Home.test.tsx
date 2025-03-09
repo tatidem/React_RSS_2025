@@ -2,24 +2,30 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter, Routes, Route, useParams } from 'react-router-dom';
-import Home from '../pages/home/Home';
-import searchReducer from '../app/searchSlice';
-import selectedItemsReducer from '../app/selectedItemsSlice';
-import { useSearchComicsQuery } from '../app/apiSlice';
+import { ReadonlyURLSearchParams, useRouter, useSearchParams } from 'next/navigation';
+import searchReducer from '@/core/searchSlice';
+import selectedItemsReducer from '@/core/selectedItemsSlice';
+import { useSearchComicsQuery } from '@/core/apiSlice';
 import { generateMockData } from './utils/generateMockData';
+import Home from '@/components/home/Home';
 
-vi.mock('../app/apiSlice', () => ({
+vi.mock('@/core/apiSlice', () => ({
   useSearchComicsQuery: vi.fn(),
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock('next/navigation', async () => {
+  const actual = await vi.importActual('next/navigation');
   return {
     ...actual,
-    useParams: vi.fn(),
+    useRouter: vi.fn(),
+    useSearchParams: vi.fn(),
   };
 });
+
+const detaildContent = 'Mocked Detailed Component';
+vi.mock('@/components/detailed/Detailed', () => ({
+  default: () => <div>{detaildContent}</div>,
+}));
 
 const createTestStore = (initialState = { search: { searchTerm: '' } }) => {
   return configureStore({
@@ -33,8 +39,18 @@ const createTestStore = (initialState = { search: { searchTerm: '' } }) => {
 
 describe('Home', () => {
   const mockUseSearchComicsQuery = vi.mocked(useSearchComicsQuery);
-  const mockUseParams = vi.mocked(useParams);
   let store: ReturnType<typeof createTestStore>;
+
+  const mockRouter = {
+    push: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  };
+
+  const mockSearchParams = new URLSearchParams('query=test&page=1');
 
   const getMockUseSearchComicsQuery = (
     params: Partial<ReturnType<typeof useSearchComicsQuery>> = {}
@@ -61,17 +77,15 @@ describe('Home', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     store = createTestStore();
+    vi.mocked(useRouter).mockReturnValue(mockRouter);
+    vi.mocked(useSearchParams).mockReturnValue(mockSearchParams as ReadonlyURLSearchParams);
   });
 
   it('renders header and search bar', () => {
     getMockUseSearchComicsQuery();
-    mockUseParams.mockReturnValue({});
-
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <Home />
       </Provider>
     );
 
@@ -83,13 +97,9 @@ describe('Home', () => {
     getMockUseSearchComicsQuery({
       isFetching: true,
     });
-    mockUseParams.mockReturnValue({});
-
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <Home />
       </Provider>
     );
 
@@ -102,13 +112,9 @@ describe('Home', () => {
       isError: true,
       error,
     });
-    mockUseParams.mockReturnValue({});
-
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <Home />
       </Provider>
     );
 
@@ -120,13 +126,9 @@ describe('Home', () => {
     getMockUseSearchComicsQuery({
       data: mockData,
     });
-    mockUseParams.mockReturnValue({});
-
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <Home />
       </Provider>
     );
 
@@ -134,37 +136,25 @@ describe('Home', () => {
     expect(screen.getByText('Comic 2')).toBeInTheDocument();
   });
 
-  it('renders outlet when uid is present', () => {
+  it('renders detailed content when showDetailed is true', () => {
     const mockData = generateMockData(1);
     getMockUseSearchComicsQuery({
       data: mockData,
     });
-
-    mockUseParams.mockReturnValue({ uid: '1' });
-
     render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={['/detailed/1']}>
-          <Routes>
-            <Route path="/" element={<Home />}>
-              <Route path="detailed/:uid" element={<div>Outlet Content</div>} />
-            </Route>
-          </Routes>
-        </MemoryRouter>
+        <Home showDetailed={true} />
       </Provider>
     );
-    expect(screen.getByText('Outlet Content')).toBeInTheDocument();
+
+    expect(screen.getByText(detaildContent)).toBeInTheDocument();
   });
 
   it('renders error button', () => {
     getMockUseSearchComicsQuery();
-    mockUseParams.mockReturnValue({});
-
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <Home />
       </Provider>
     );
 

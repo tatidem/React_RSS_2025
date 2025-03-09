@@ -1,0 +1,25 @@
+.root-wrapper {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--text-color);
+  height: calc(100vh - 300px);
+}
+
+.error-wrapper {
+  height: auto;
+}
+
+.header {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 3rem;
+  text-align: center;
+}
+
+.error-wrapper button {
+  border: 1px solid #26172c;
+  margin-top: 18px;
+  width: auto;
+}

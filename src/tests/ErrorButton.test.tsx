@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { ErrorButton } from '../comps/errorButton/ErrorButton';
+import { ErrorButton } from '@/components/errorButton/ErrorButton';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
+import ErrorBoundarySimple from './utils/ErrorBoundarySimple';
 
 describe('ErrorButton', () => {
   it('renders the button', () => {
@@ -9,18 +10,20 @@ describe('ErrorButton', () => {
     expect(button).toBeInTheDocument();
   });
 
-  it('throws an error when the button is clicked', () => {
-    const consoleErrorMock = vi.spyOn(globalThis.console, 'error').mockImplementation(() => {});
-    try {
-      render(<ErrorButton />);
-      const button = screen.getByText('Error Button');
+  it('throws an error when the button is clicked', async () => {
+    let caughtError: Error | null = null;
+    vi.spyOn(globalThis.console, 'error').mockImplementation(() => {});
+    render(
+      <ErrorBoundarySimple onError={(error) => (caughtError = error)}>
+        <ErrorButton />
+      </ErrorBoundarySimple>
+    );
+    const button = screen.getByText('Error Button');
+    await act(async () => {
       fireEvent.click(button);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      const typedError = error as Error;
-      expect(typedError.message).toBe('Something went wrong...');
-    }
-    expect(consoleErrorMock).toHaveBeenCalled();
-    consoleErrorMock.mockRestore();
+    });
+
+    expect(caughtError).toBeInstanceOf(Error);
+    expect((caughtError as unknown as Error).message).toBe('Something went wrong...');
   });
 });

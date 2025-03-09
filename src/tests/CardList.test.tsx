@@ -1,23 +1,22 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import CardList from '../comps/cardList/CardList';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
-import { ITEMS_PER_PAGE } from '../app/constants';
+import { ReadonlyURLSearchParams, useRouter, useSearchParams } from 'next/navigation';
 import { generateMockData } from './utils/generateMockData';
+import CardList from '@/components/cardList/CardList';
+import { ITEMS_PER_PAGE } from '@/core/constants';
 
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(),
   useDispatch: vi.fn(),
 }));
 
-vi.mock('react-router-dom', () => ({
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
   useSearchParams: vi.fn(),
-  useNavigate: vi.fn(),
-  useLocation: vi.fn(),
 }));
 
-vi.mock('../comps/card/Card', () => ({
+vi.mock('@/components/card/Card', () => ({
   default: vi.fn(({ index, comic, onClick, isSelected, onCheckboxChange }) => (
     <div data-testid="card" onClick={onClick}>
       {index} - {comic.title}
@@ -31,30 +30,29 @@ vi.mock('../comps/card/Card', () => ({
   )),
 }));
 
-vi.mock('../comps/nothing/Nothing', () => ({
+vi.mock('@/components/nothing/Nothing', () => ({
   default: vi.fn(({ empty }) => <div data-testid="nothing">{empty ? 'No results' : ''}</div>),
 }));
 
 describe('CardList', async () => {
   const mockDispatch = vi.fn();
-  const mockNavigate = vi.fn();
-  const mockSetSearchParams = vi.fn();
+  const mockPush = vi.fn();
+  const mockRouter = {
+    push: mockPush,
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  };
+
+  const mockSearchParams = new URLSearchParams('page=1');
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useDispatch).mockReturnValue(mockDispatch);
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
-    vi.mocked(useSearchParams).mockReturnValue([
-      new URLSearchParams('page=1'),
-      mockSetSearchParams,
-    ]);
-    vi.mocked(useLocation).mockReturnValue({
-      pathname: '/',
-      search: '',
-      hash: '',
-      state: null,
-      key: 'default',
-    });
+    vi.mocked(useRouter).mockReturnValue(mockRouter);
+    vi.mocked(useSearchParams).mockReturnValue(mockSearchParams as ReadonlyURLSearchParams);
     vi.mocked(useSelector).mockImplementation((selector) =>
       selector({
         search: { searchTerm: '' },
@@ -81,34 +79,26 @@ describe('CardList', async () => {
   });
 
   it('calls handleCardClick when a card is clicked', () => {
-    vi.mocked(useLocation).mockReturnValue({
-      pathname: '/',
-      search: '',
-      hash: '',
-      state: null,
-      key: 'default',
-    });
     const mockData = generateMockData();
     render(<CardList data={mockData} />);
     const cardElements = screen.getAllByTestId('card');
     fireEvent.click(cardElements[0]);
-    expect(mockNavigate).toHaveBeenCalledWith('/detailed/1');
+    expect(mockPush).toHaveBeenCalledWith('/detailed/1?page=1');
   });
 
   it('does not call handleCardClick when a card is clicked on the detailed page', () => {
     cleanup();
-    vi.mocked(useLocation).mockReturnValue({
-      pathname: '/detailed/1',
-      search: '',
-      hash: '',
-      state: null,
-      key: 'default',
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/detailed/1',
+      },
+      writable: true,
     });
     const mockData = generateMockData();
     render(<CardList data={mockData} />);
     const cardElements = screen.getAllByTestId('card');
     fireEvent.click(cardElements[0]);
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('dispatches addItem action when a checkbox is unchecked', () => {
@@ -139,6 +129,6 @@ describe('CardList', async () => {
     render(<CardList data={mockData} />);
     const nextButton = screen.getByRole('button', { name: /next/i });
     fireEvent.click(nextButton);
-    expect(mockSetSearchParams).toHaveBeenCalledWith(expect.objectContaining({ page: '2' }));
+    expect(mockPush).toHaveBeenCalledWith('?page=2');
   });
 });

@@ -1,6 +1,6 @@
+import ErrorBoundary from '@/components/errorBoundary/ErrorBoundary';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ErrorBoundary from '../comps/errorBoundary/ErrorBoundary';
 
 let error = true;
 const childComponent = <div>Child Component</div>;
