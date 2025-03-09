@@ -1,26 +1,20 @@
-import Detailed from '../pages/detailed/Detailed';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { describe, it, expect, vi, afterEach, beforeEach, Mock } from 'vitest';
-import { useGetComicDetailsQuery } from '../app/apiSlice';
+import { useRouter } from 'next/router';
+import Detailed from '@/components/detailed/Detailed';
+import { useGetComicDetailsQuery } from '@/core/apiSlice';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useParams: vi.fn(),
-    useNavigate: vi.fn(),
-    useLocation: vi.fn(),
-  };
-});
+vi.mock('next/router', () => ({
+  useRouter: vi.fn(),
+}));
 
-vi.mock('../app/apiSlice', () => ({
+vi.mock('@/core/apiSlice', () => ({
   useGetComicDetailsQuery: vi.fn(),
 }));
 
 const uid = 'UID-MOCK';
 const query = '?query=test';
-const routerPath = `/detailed/${uid}${query}`;
+// const routerPath = `/detailed/${uid}${query}`;
 
 const mockComicDetails = {
   uid,
@@ -40,35 +34,35 @@ const mockComicDetails = {
   publishers: [{ uid: '012', name: 'Mock Publisher' }],
 };
 
-vi.mock('../comps/loadingSpinner/LoadingSpinner', () => {
-  return {
-    __esModule: true,
-    default: () => <div data-testid="loading-spinner">Loading...</div>,
-  };
-});
-
 describe('Detailed Component', () => {
-  const mockNavigate = vi.fn();
-  const mockLocation = {
+  const mockPush = vi.fn();
+  const mockRouter = {
     pathname: `/detailed/${uid}`,
-    search: query,
-    hash: '',
-    state: null,
-    key: 'r4nd0m',
+    query: { uid, query: 'test' },
+    push: mockPush,
+    route: '/detailed/[uid]',
+    asPath: `/detailed/${uid}${query}`,
+    basePath: '',
+    isLocaleDomain: false,
+    replace: vi.fn(),
+    reload: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    prefetch: vi.fn(),
+    beforePopState: vi.fn(),
+    events: {
+      on: vi.fn(),
+      off: vi.fn(),
+      emit: vi.fn(),
+    },
+    isFallback: false,
+    isReady: true,
+    isPreview: false,
   };
-
-  const memRender = (
-    <MemoryRouter initialEntries={[routerPath]}>
-      <Routes>
-        <Route path="/detailed/:uid" element={<Detailed />} />
-      </Routes>
-    </MemoryRouter>
-  );
 
   beforeEach(() => {
-    (useParams as Mock).mockReturnValue({ uid });
-    (useNavigate as Mock).mockReturnValue(mockNavigate);
-    (useLocation as Mock).mockReturnValue(mockLocation);
+    vi.clearAllMocks();
+    vi.mocked(useRouter).mockReturnValue(mockRouter);
   });
 
   afterEach(() => {
@@ -81,9 +75,9 @@ describe('Detailed Component', () => {
       isLoading: true,
       isError: false,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
-      expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+      expect(screen.getByTestId('spinner-container')).toBeInTheDocument();
     });
   });
 
@@ -93,7 +87,7 @@ describe('Detailed Component', () => {
       isLoading: false,
       isError: false,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
       expect(screen.getByText(mockComicDetails.title)).toBeInTheDocument();
@@ -125,14 +119,15 @@ describe('Detailed Component', () => {
       isLoading: false,
       isError: false,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/?query=test', {
-      replace: true,
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/',
+      query: { query: 'test', uid: 'UID-MOCK' },
     });
   });
 
@@ -142,15 +137,16 @@ describe('Detailed Component', () => {
       isLoading: false,
       isError: false,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
     fireEvent.mouseDown(document.body);
     fireEvent.mouseUp(document.body);
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(mockNavigate).toHaveBeenCalledWith('/?query=test', {
-      replace: true,
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/',
+      query: { query: 'test', uid: 'UID-MOCK' },
     });
   });
 
@@ -160,7 +156,7 @@ describe('Detailed Component', () => {
       isLoading: false,
       isError: false,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(useGetComicDetailsQuery).toHaveBeenCalledWith(uid);
     });
@@ -168,14 +164,14 @@ describe('Detailed Component', () => {
     fireEvent.mouseDown(titleElement);
     fireEvent.mouseUp(titleElement);
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('render error loading comic details', async () => {
     (useGetComicDetailsQuery as Mock).mockReturnValue({
       isError: true,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(screen.getByText('Error loading comic details.')).toBeInTheDocument();
     });
@@ -185,7 +181,7 @@ describe('Detailed Component', () => {
     (useGetComicDetailsQuery as Mock).mockReturnValue({
       data: null,
     });
-    render(memRender);
+    render(<Detailed />);
     await waitFor(() => {
       expect(screen.getByText('No comic data found.')).toBeInTheDocument();
     });

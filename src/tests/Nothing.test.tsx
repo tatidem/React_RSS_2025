@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import Nothing from '../comps/nothing/Nothing';
 import { NothingProps } from '../interfaces';
+import Nothing from '@/components/nothing/Nothing';
 
 describe('Nothing', () => {
   it('renders only stars when empty is true', () => {

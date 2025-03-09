@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import Flyout from '../comps/flyout/Flyout';
-import selectedItemsReducer from '../app/selectedItemsSlice';
+import selectedItemsReducer from '../core/selectedItemsSlice';
 import { generateMockData } from './utils/generateMockData';
+import Flyout from '@/components/flyout/Flyout';
 
 vi.mock('react', async () => {
   const actual = await vi.importActual('react');
@@ -15,7 +15,7 @@ vi.mock('react', async () => {
   };
 });
 
-vi.mock('../utils/downloadCSV', () => ({
+vi.mock('../core/utils/downloadCSV.ts', () => ({
   downloadCSV: vi.fn(),
 }));
 
@@ -43,7 +43,7 @@ describe('Flyout', () => {
 
     expect(screen.getByText('3 items are selected')).toBeInTheDocument();
     await userEvent.click(screen.getByText('Download'));
-    const { downloadCSV } = await import('../utils/downloadCSV');
+    const { downloadCSV } = await import('../core/utils/downloadCSV');
     expect(downloadCSV).toHaveBeenCalledWith(mockData, ['1', '2', '3'], expect.any(Function));
 
     await userEvent.click(screen.getByText('Unselect all'));
@@ -67,7 +67,7 @@ describe('Flyout', () => {
   it('triggers download link when downloadUrl is set', async () => {
     const store = createTestStore({ items: ['1', '2', '3'] });
     const mockData = generateMockData(3);
-    const { downloadCSV } = await import('../utils/downloadCSV');
+    const { downloadCSV } = await import('../core/utils/downloadCSV');
     vi.mocked(downloadCSV).mockImplementation((_data, _selectedItems, setDownloadUrl) => {
       setDownloadUrl('mock-url');
     });

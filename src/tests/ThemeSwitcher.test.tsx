@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, Mock } from 'vitest';
+import userEvent from '@testing-library/user-event';
 import ThemeSwitcher from '@/components/themeSwitcher/ThemeSwitcher';
 import useTheme from '@/core/context/useTheme';
 
-vi.mock('../app/context/useTheme', () => ({
+vi.mock('@/core/context/useTheme', () => ({
   default: vi.fn(),
 }));
 
