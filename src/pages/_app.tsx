@@ -5,7 +5,7 @@ import { store } from '@/core/store';
 import ThemeSwitcher from '@/components/themeSwitcher/ThemeSwitcher';
 import { ThemeProvider } from '@/core/context/ThemeContext';
 import ErrorBoundary from '@/components/errorBoundary/ErrorBoundary';
-import '../styles.css';
+import './styles.css';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (

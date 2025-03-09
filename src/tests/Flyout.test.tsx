@@ -48,7 +48,7 @@ describe('Flyout', () => {
 
     await userEvent.click(screen.getByText('Unselect all'));
     const state = store.getState();
-    expect(state.selectedItems.items).toEqual([]);
+    expect(state.selectedItems.items as []).toEqual([]);
   });
 
   it('render when no items are selected', () => {

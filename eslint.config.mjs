@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 });
 
 export default tseslint.config(
-  { ignores: ['dist', 'public', 'coverage', '.next', 'user.vscode.cjs'] },
+  { ignores: ['dist', 'public', 'coverage', '.next', '*.cjs'] },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     extends: [
