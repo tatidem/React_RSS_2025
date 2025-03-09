@@ -1,15 +1,14 @@
-'use client';
 import React, { useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { CardListProps } from '../../interfaces';
 import Card from '../card/Card';
 import Nothing from '../nothing/Nothing';
 import style from './CardList.module.css';
 import Pagination from '../pagination/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/core/store';
-import { addItem, removeItem } from '@/core/selectedItemsSlice';
-import { ITEMS_PER_PAGE } from '@/core/constants';
+import { RootState } from '../../core/store';
+import { addItem, removeItem } from '../../core/selectedItemsSlice';
+import { ITEMS_PER_PAGE } from '../../core/constants';
 
 const CardList: React.FC<CardListProps> = ({ data }) => {
   const dispatch = useDispatch();

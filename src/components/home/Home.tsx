@@ -1,12 +1,11 @@
-'use client';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/core/store';
-import SearchBar from '@/components/searchBar/SearchBar';
-import CardList from '@/components/cardList/CardList';
-import { ErrorButton } from '@/components/errorButton/ErrorButton';
-import LoadingSpinner from '@/components/loadingSpinner/LoadingSpinner';
-import Flyout from '@/components/flyout/Flyout';
-import { useSearchComicsQuery } from '@/core/apiSlice';
+import { RootState } from '../../core/store';
+import SearchBar from '../../components/searchBar/SearchBar';
+import CardList from '../../components/cardList/CardList';
+import { ErrorButton } from '../../components/errorButton/ErrorButton';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
+import Flyout from '../../components/flyout/Flyout';
+import { useSearchComicsQuery } from '../../core/apiSlice';
 import style from './Home.module.css';
 import Detailed from '../detailed/Detailed';
 

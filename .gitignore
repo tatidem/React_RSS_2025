@@ -43,3 +43,6 @@ next-env.d.ts
 # workspace
 user.vscode.cjs
 project-tree.cjs
+
+# React Router
+/.react-router/

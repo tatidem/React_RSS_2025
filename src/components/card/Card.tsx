@@ -1,4 +1,4 @@
-import { getDescription } from '@/core/utils/description';
+import { getDescription } from '../../core/utils/description';
 import { CardProps } from '../../interfaces';
 import style from './Card.module.css';
 

@@ -1,10 +1,9 @@
-'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { unselectAll } from '@/core/selectedItemsSlice';
+import { unselectAll } from '../../core/selectedItemsSlice';
 import style from './Flyout.module.css';
-import { downloadCSV } from '@/core/utils/downloadCSV';
-import { RootState } from '@/core/store';
+import { downloadCSV } from '../../core/utils/downloadCSV';
+import { RootState } from '../../core/store';
 import { FlyoutProps } from '../../interfaces';
 
 const Flyout: React.FC<FlyoutProps> = ({ data }) => {

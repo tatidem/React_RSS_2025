@@ -1,4 +1,4 @@
-import NotFound from '@/components/notFound/NotFound';
+import NotFound from '../../components/notFound/NotFound';
 
 const Error404: React.FC = () => {
   return <NotFound />;

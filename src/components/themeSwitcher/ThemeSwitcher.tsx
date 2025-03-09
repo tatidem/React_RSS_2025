@@ -1,4 +1,4 @@
-import useTheme from '@/core/context/useTheme';
+import useTheme from '../../core/context/useTheme';
 
 const ThemeSwitcher: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
