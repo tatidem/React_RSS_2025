@@ -34,7 +34,6 @@ const CardList: React.FC<CardListProps> = ({ data }) => {
           pathname: `/detailed/${cardUid}`,
           query: router.query,
         });
-        //router.push(`/detailed/${cardUid}`, undefined, { shallow: true });
       }
     },
     [router]

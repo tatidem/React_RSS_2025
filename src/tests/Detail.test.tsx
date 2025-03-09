@@ -14,7 +14,6 @@ vi.mock('@/core/apiSlice', () => ({
 
 const uid = 'UID-MOCK';
 const query = '?query=test';
-// const routerPath = `/detailed/${uid}${query}`;
 
 const mockComicDetails = {
   uid,

@@ -84,7 +84,6 @@ describe('SearchBar', () => {
 
   it('calls handleSearch with trimmed query on button click', async () => {
     const store = createTestStore();
-    //vi.spyOn(React, 'useEffect').mockImplementationOnce(() => {});
 
     render(
       <Provider store={store}>
@@ -104,10 +103,6 @@ describe('SearchBar', () => {
         query: { query: 'test query', page: '1' },
       });
     });
-
-    // await waitFor(() => {
-    //   expect(store.getState().search.searchTerm).toBe('test query');
-    // });
   });
 
   it('syncs searchTerm from Redux with query state on mount', async () => {
