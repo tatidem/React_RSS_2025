@@ -33,7 +33,6 @@ const Home: React.FC<HomeProps> = ({ showDetailed = false }) => {
               <div className={style['left-section']}>
                 <CardList data={data} />
               </div>
-
               {showDetailed && (
                 <div className={style['right-section']}>
                   <Detailed />

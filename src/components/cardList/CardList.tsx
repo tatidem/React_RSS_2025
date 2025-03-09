@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CardListProps } from '../../interfaces';
 import Card from '../card/Card';
 import Nothing from '../nothing/Nothing';
@@ -13,8 +13,8 @@ import { ITEMS_PER_PAGE } from '@/core/constants';
 
 const CardList: React.FC<CardListProps> = ({ data }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
   const selectedItems = useSelector((state: RootState) => state.selectedItems.items);
@@ -31,16 +31,16 @@ const CardList: React.FC<CardListProps> = ({ data }) => {
     (cardUid: string) => {
       if (window.location.pathname === '/') {
         const newSearchParams = new URLSearchParams(searchParams.toString());
-        router.push(`/detailed/${cardUid}?${newSearchParams.toString()}`);
+        navigate(`/detailed/${cardUid}?${newSearchParams.toString()}`);
       }
     },
-    [router, searchParams]
+    [navigate, searchParams]
   );
 
   const handlePageChange = (page: number) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set('page', page.toString());
-    router.push(`?${newSearchParams.toString()}`);
+    navigate(`?${newSearchParams.toString()}`);
   };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
